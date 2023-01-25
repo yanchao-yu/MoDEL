@@ -44,7 +44,7 @@ export default function TemplatePreview() {
   const [showBot, toggleBot] = useState(true);
 
   const [isCopied, setCopied] = useClipboard(
-    `https://mcd.stackblitz.io/demo/${template}/${botId}`
+    `${import.meta.env.VITE_BASE_URL}/demo/${template}/${botId}`
   );
 
   const [showBugModal, setShowBugModal] = useState(false);
@@ -205,7 +205,7 @@ export default function TemplatePreview() {
           <div style={{ textAlign: 'center', marginTop: 20 }}>
             <input
               className="share-input"
-              placeholder={`https://mcd.stackblitz.io/demo/${template}/${botId}`}
+              placeholder={`${import.meta.env.VITE_BASE_URL}/demo/${template}/${botId}`}
               disabled
             />{' '}
             <button className="share-button" onClick={setCopied}>
