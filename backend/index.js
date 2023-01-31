@@ -1,9 +1,11 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const { Wit } = require("node-wit");
-const { google } = require("googleapis");
+import * as dotenv from 'dotenv'
+dotenv.config()
+import express from 'express'
+import cors from 'cors'
+import nodewit from 'node-wit'
+import { google } from 'googleapis'
 
+const { Wit } = nodewit
 const app = express();
 var jsonParser = express.json();
 const port = process.env.PORT || 5174;
