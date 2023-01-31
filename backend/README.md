@@ -6,14 +6,12 @@ Node & ExpressJS
 
 ## Setting up project
 
-![screenshot](https://prnt.sc/HEe-ZorT0CKC)
+### 1) Replace `.env.example` with `.env` and follow the steps below to get secret values
+- `WIT_TOKEN`: Signup with your facebook account at wit.ai, create an app and check your settings under the management tab for the server access token. This is your WIT_TOKEN
 
-### 1) Replace `.env.example` with `.env` and checkout the sections below to get your keys
-- `WIT_TOKEN`: Follow the steps below to get your token
+- `GOOGLE_APP_CREDENTIALS`: Follow this [link](https://developers.google.com/workspace/guides/create-credentials#service-account) to learn how to generate the `secrets.json` file. Once generated and downloaded, add it to the root of your project
 
-- `GOOGLE_APP_CREDENTIALS`: Follow the [steps](#) below to learn how to generate the `secrets.json` file and add to the root of your project
-
-- `SHEET_ID`: Follow these [steps](#) to get your id
+- `SHEET_ID`: When you create a sheet from https://sheets.google.com/, this is the `id` in your URL `https://docs.google.com/spreadsheets/d/{id}`
 
 *[Recommendation]: The use of Google Sheets as backend in this project should be replaced with a better database system. I have shared the current sheet to get a view of how the data is structured. Consider the use of [Supabase](https://supabase.com/)*
 
@@ -21,7 +19,7 @@ Node & ExpressJS
 `npm install`
 
 ### 3) Start Server
-`npm start`
+`npm run server`
 
 ## Author
 🧑🏿‍💻 Damilola Oduronbi ~
