@@ -16,10 +16,24 @@ Node & ExpressJS
 *[Recommendation]: The use of Google Sheets as backend in this project should be replaced with a better database system. I have shared the current sheet to get a view of how the data is structured. Consider the use of [Supabase](https://supabase.com/)*
 
 ### 2)  Install packages and dependencies
-`npm install`
+Run `npm install`
 
 ### 3) Start Server
-`npm run server`
+Run `npm run server` and open `http://localhost:3001/v1` in your browser
+
+## API Endpoints
+*~ A better database should be used to replace the spreadsheet currently being used ~*
+### `GET /v1/demo`   
+This is used to fetch the demo data from the spreadsheet. Visit `http://localhost:3001/v1/demo` in your browser to see data
+
+### `POST /v1/demo`
+This is used to save demo data to the database. Data is received is sent to the spreadsheet.
+
+### `POST /v1/bug-report`
+This is used to save bug reports filed by users to the database. Data is saved in the same spreadsheet, on different tabs.
+
+### `POST /v1/`
+This is used to get responses from the bot when the user makes use of the default custom server
 
 ## Author
 🧑🏿‍💻 Damilola Oduronbi ~

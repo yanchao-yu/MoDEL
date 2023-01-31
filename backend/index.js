@@ -85,7 +85,7 @@ const writeData = async (range, values) => {
   return writeReq;
 };
 
-app.get("/demo", async (req, res) => {
+app.get("/v1/demo", async (req, res) => {
   try {
     const data = await fetchData("bot_config");
     const [fieldKeys, ...rest] = data.values;
@@ -96,7 +96,7 @@ app.get("/demo", async (req, res) => {
   }
 });
 
-app.post("/demo", jsonParser, async (req, res) => {
+app.post("/v1/demo", jsonParser, async (req, res) => {
   try {
     const {
       botId,
@@ -140,7 +140,7 @@ app.post("/demo", jsonParser, async (req, res) => {
   }
 });
 
-app.post("/bug-report", jsonParser, async (req, res) => {
+app.post("/v1/bug-report", jsonParser, async (req, res) => {
   try {
     const { session_id, bug_description } = req.body;
     const writeReq = await writeData("bug_report", [
@@ -157,7 +157,7 @@ app.post("/bug-report", jsonParser, async (req, res) => {
   }
 });
 
-app.post("/", jsonParser, async (req, res) => {
+app.post("/v1", jsonParser, async (req, res) => {
   const { session_id, user_id, text, ...rest } = req.body;
   handleMessage(text).then((data) => {
     const response = handleQuery(data.intents);
