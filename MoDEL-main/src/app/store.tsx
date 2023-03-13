@@ -1,18 +1,20 @@
 import { useState, createContext } from 'react'
+import { conversations } from '../chats';
 
 export const DataContext = createContext<any>(null);
-
-
 
 const DataContextProvider = (props : any) => {
 
     const [data, setData] = useState<any>(null);
+  const [chats, updateChats] = useState(conversations);
 
-    console.log({globalData : data});
+
+    console.log({globalChats:chats});
     
     return (
         <DataContext.Provider value={{
-            data, setData
+            data, setData,
+            chats, updateChats
         }}>
             {props.children}
         </DataContext.Provider>

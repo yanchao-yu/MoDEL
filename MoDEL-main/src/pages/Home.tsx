@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import ChatWindow from '../components/ChatWindow';
-import { conversations } from '../chats';
+// import { conversations } from '../chats';
 import { generateID } from '../utils';
 import Darkmode from 'drkmd-js';
 import { Uploader } from "uploader"; // Installed by "react-uploader".
@@ -11,7 +11,7 @@ import { DataContext } from '../app/store'
 
 
 export default function Home() {
-  const [chats, updateChats] = useState(conversations);
+  // const [chats, updateChats] = useState(conversations);
   const darkmode = new Darkmode()
   darkmode.toggle()
   darkmode.attach()
@@ -61,12 +61,17 @@ export default function Home() {
       <Link className="button" to="/templates">
         Get started
       </Link>
+      <span style={{marginLeft: '10px'}}>
+        <Link target="_blank" className="button" to="/logplayback">
+          Log Playback
+        </Link>
+      </span>
       <div className="divider" />
       <ChatWindow
         title="CoronaBot Demo"
         session_id={generateID()}
-        chats={chats}
-        updateChats={updateChats}
+        // chats={chats}
+        // updateChats={updateChats}
         width={280}
         height={350}
       />

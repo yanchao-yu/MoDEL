@@ -7,6 +7,7 @@ import TemplatePreview from './pages/TemplatePreview';
 import Demo from './pages/Demo';
 import './style.css';
 import DataContextProvider from './app/store'
+import LogPlayback from './pages/LogPlayback';
 
 export default function App() {
   return (
@@ -24,6 +25,9 @@ export default function App() {
         </Route>
         <Route path="/templates">
           <Templates />
+        </Route>
+        <Route path="/logplayback">
+          <LogPlayback />
         </Route>
         <Route path="/">
           <Home />
