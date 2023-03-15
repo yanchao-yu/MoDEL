@@ -198,6 +198,15 @@ export default function TemplatePreview() {
                   Share Overall Feedback 🙂
                 </a>
               ) : null}
+              {/* <div> */}
+              {/* <input
+                  type="file"
+                  accept=".txt"
+                  onClick={handleUploadTextFile}
+                  className="button bug-report-btn"
+                />
+                  Upload text file
+                </div> */}
             </div>
           ) : null}
         </div>

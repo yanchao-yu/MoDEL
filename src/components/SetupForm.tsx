@@ -6,9 +6,10 @@ import { postData, generateString } from '../utils';
 import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
+import LogUploader from './LogUploader';
 
 export default function SetupForm({ display_area = true, webcam = true}) {
-  const { template } = useParams();
+  const template = useParams();
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -99,6 +100,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
   return (
     <div>
       <div className="input-div">
+        <LogUploader session_id={"local"}/>
         <label className="styled-label" htmlFor="title">
           Title
         </label>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useRef, useEffect, useState, useCallback} from 'react';
+import {useRef, useEffect, useState, useContext} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChatWindowInterface } from '../interfaces';
 import Bot from '../svgs/bot.svg';
@@ -8,6 +8,7 @@ import classNames from "classnames";
 import 'regenerator-runtime/runtime'
 import Speech from "speak-tts";
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
+import { DataContext } from '../app/store';
 
 
 export default function ChatWindow({
@@ -15,16 +16,16 @@ export default function ChatWindow({
   botIcon = 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png',
   serverURL,
   session_id,
-  chats,
+  // chats,
   enableVoice,
-  updateChats,
+  // updateChats,
   width = 300,
   height = 400,
 }: ChatWindowInterface) {
 
   const [isListening, setListening] = useState(false);
   const [botResponse, setBotResponse] = useState('');
-
+  const {chats, updateChats }= useContext(DataContext)
   // const appId = '8b12e1fc-7544-46bb-a619-10a9cc77dc2d';
   // const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
   // SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
@@ -123,7 +124,7 @@ export default function ChatWindow({
       postData(serverURL || 'https://kpfm2b.sse.codesandbox.io', {
         session_id,
         user_id: uuidv4(),
-        text: e.currentTarget.value,
+        user_input: e.currentTarget.value,
       })
         .then(async (data) => {
           if (data) {
@@ -148,6 +149,8 @@ export default function ChatWindow({
     }
   }, [botResponse]);
 
+
+  console.log({chats});
   // START -> Autoscroll Chats Window
   const AutoScrollConversations = () => {
     const containerRef = useRef();
