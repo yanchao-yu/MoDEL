@@ -1,6 +1,7 @@
 import Bot from '../svgs/bot.svg';
 import UserIcon from '../assets/profile.svg'
 import { Uploader } from "uploader";
+import { Link, useParams } from 'react-router-dom';
 import { UploadButton } from "react-uploader";
 import { useState } from 'react';
 import Dropdown from "react-dropdown";
@@ -118,10 +119,14 @@ const LogPlayback = () => {
 
     return (
         <div style={{ width: 400, margin: "0 auto" }}>
+
+            <Link className="nav-link" to="/home">
+                &#8592; Back to Home Page
+            </Link>
             <div>
                 <div className="bot-information text-center">
                     <h3>
-                        <img src={Bot} width={20} /> {"CoronaBot Demo"}
+                        <img src={Bot} width={20} /> {"Log PlayBack"}
                     </h3>
                 </div>
                 <div id="chat-window" style={{ height: "60vh" }}>
@@ -166,7 +171,6 @@ const LogPlayback = () => {
                 </div>
 
                 <div>
-                    <p>"speaker":"bot","text": "..."</p>
                     <div>
                         <label>Please provide an server input example (JSON object) </label>
                         <input className='logplaybackInput' id={"user_input_json"} name="input" type={"text"} onKeyDown={(e) => enterKeyHandler(e, "input")} onChange={(e: any) => setInput(e.target.value)} />

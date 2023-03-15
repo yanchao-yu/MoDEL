@@ -76,17 +76,6 @@ export default function Home() {
         height={350}
       />
     </div>
-    <div>
-      <UploadButton uploader={uploader}
-                    options={options}
-                    onComplete={onCompleteSuccess}>
-          {({onClick}) =>
-              <button onClick={onClick}>
-                  Upload a file...
-              </button>
-          }
-      </UploadButton>
-    </div>
   </div> 
   );
 }
