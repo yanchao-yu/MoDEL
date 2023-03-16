@@ -1,2 +1,2 @@
 // handle chats state
-// handle connection to backend
+// handle connection to server
