@@ -14,6 +14,9 @@ export default function Demo() {
   const [chats, updateChats] = useState<{text: string, speaker: string}[]>([]);
   const [showBot, toggleBot] = useState(true);
   const [showBugModal, setShowBugModal] = useState(false);
+
+  console.log("activeBot: " + activeBot)
+
   function displayAreaMarkup() { 
     return { __html: activeBot.displayContent };
   }

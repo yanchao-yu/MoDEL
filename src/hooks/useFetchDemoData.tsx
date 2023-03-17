@@ -19,21 +19,23 @@ export default function useFetchDemoData(botId: string) {
   useEffect(() => {
     if (botData.length > 0) {
       for (let data of botData) {
-        if (data[0] === botId) {
+        if (data['botId'] === botId) {
           const obj = {
-            title: data[12],
-            description: data[5],
-            embedCode: data[8],
-            developmentPlatform: data[6],
-            botName: data[3],
-            botIntro: data[2],
-            botIcon: data[1],
-            consentNote: data[4],
-            enableBugReport: data[9],
-            enableFeedback: data[10],
-            feedbackLink: data[11],
-            displayContent: data[7],
-            serverURL: data[13],
+            title: data['title'],
+            description: data['description'],
+            embedCode: data['embedCode'],
+            developmentPlatform: data['developmentPlatform'],
+            botName: data['botName'],
+            botIntro: data['botIntro'],
+            botIcon: data['botIcon'],
+            consentNote: data['consentNote'],
+            enableBugReport: data['enableBugReport'],
+            enableFeedback: data['enableFeedback'],
+            feedbackLink: data['feedbackLink'],
+            displayContent: data['displayContent'],
+            serverURL: data['serverURL'],
+            webcamId: data['webcamId'],
+            enableVoice: data['enableVoice'],
           };
           setActiveBot(obj);
           setLoading(false);
