@@ -6,7 +6,6 @@ import { postData, generateString } from '../utils';
 import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
-import LogUploader from './LogUploader';
 import Darkmode from 'drkmd-js'
 
 export default function SetupForm({ display_area = true, webcam = true}) {
@@ -34,32 +33,31 @@ export default function SetupForm({ display_area = true, webcam = true}) {
   const darkmode = new Darkmode()
     darkmode.toggle()
     darkmode.attach()
-
   const save = () => {
     const botId = generateString(8);
     const dataObj = {
-      botId,
-      title,
-      description,
-      embedCode,
-      developmentPlatform,
-      botName,
-      botIntro,
-      botIcon,
-      serverURL,
-      consentNote,
-      enableBugReport,
-      enableFeedback,
-      enableVoice,
-      webcamId,
-      feedbackLink: feedbackLink || 'https://forms.gle/PE9Sef4tLrQPW6bE6',
-      displayContent:
+        "botId": botId,
+        "title": title,
+        "description": description,
+        "embedCode": embedCode,
+        "developmentPlatform": developmentPlatform,
+        "botName": botName,
+        "botIntro": botIntro,
+        "botIcon": botIcon,
+        "serverURL": serverURL,
+        "consentNote": consentNote,
+        "enableBugReport": enableBugReport,
+        "enableFeedback": enableFeedback,
+        "enableVoice": enableVoice,
+        "webcamId": webcamId,
+        "feedbackLink": feedbackLink || 'https://forms.gle/PE9Sef4tLrQPW6bE6',
+        "displayContent":
         editorRef.current?.getContent() || '<p>No content provided</p>',
     };
     setLoading(true);
     window.localStorage.setItem('obj', JSON.stringify(dataObj));
-    const url = new URL(${import.meta.env.VITE_BASE_URL}, '/v1/demo/?id=', ${botId}).href ${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}'
-    postData(, dataObj)
+    const url = `${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}`
+    postData(url, dataObj)
       .then(async (data) => {
         console.log(data);
         history.push(`/templates/${template.template}/preview`);
@@ -103,7 +101,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
   return (
     <div>
       <div className="input-div">
-        <LogUploader session_id={"local"}/>
         <label className="styled-label" htmlFor="title">
           Title
         </label>

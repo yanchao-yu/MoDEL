@@ -9,7 +9,7 @@ export default function BugReport({ session_id }) {
   const [success, setSuccess] = useState(false);
   const handleSubmit = () => {
     setLoading(true);
-    postData('${import.meta.env.VITE_BASE_URL}/v1/bug-report', {
+    postData(`${import.meta.env.VITE_BASE_URL}/v1/bug-report`, {
       bug_description,
       session_id,
     })

@@ -19,7 +19,7 @@ const config = {
 // const { Wit } = nodewit
 const app = express();
 var jsonParser = express.json();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3031;
 
 app.use(cors());
 
@@ -63,45 +63,12 @@ const writeData = async (range, id, values) => {
  * Post the bot details to the storage
  */
 app.post("/v1/demo", jsonParser, async (req, res) => {
-  const {
-      botId,
-      botIcon,
-      botIntro,
-      botName,
-      serverURL,
-      consentNote,
-      description,
-      developmentPlatform,
-      displayContent,
-      embedCode,
-      enableBugReport,
-      enableFeedback,
-      feedbackLink,
-      title
-    } = req.body;
-
-  const value = {
-    "botId": botId,
-    "botIcon": botIcon,
-    "botIntro": botIntro,
-    "botName": botName,
-    "serverURL": serverURL,
-    "consentNote": consentNote,
-    "description": description,
-    "developmentPlatform": developmentPlatform,
-    "displayContent": displayContent,
-    "embedCode": embedCode,
-    "enableBugReport": enableBugReport,
-    "enableFeedback": enableFeedback,
-    "feedbackLink": feedbackLink,
-    "title": title
-  }
-  // const value = req.body;
-  // console.log(`value: ` + JSON.stringify(value));
-  // console.log(`botID: ` + JSON.parse(JSON.stringify(value))['botID']);
+  const value = req.body;
+  console.log(`value: ` + JSON.stringify(value));
+  console.log(`botId: ` + JSON.parse(JSON.stringify(value))['botId']);
   try {
-    await writeData("botConfig", value['botID'], value);
-    console.log("Document written with ID: ", value['botID']);
+    await writeData("botConfig", value['botId'], value);
+    console.log("Document written with ID: ", value['botId']);
     return res.json({ msg: "firebase updated!" });
   }
   catch (e){
