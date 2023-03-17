@@ -9,7 +9,8 @@ export default function useFetchDemoData(botId: string) {
 
   useEffect(() => {
     const getBotData = async () => {
-      const data = await fetchData('https://kpfm2b.sse.codesandbox.io/demo');
+      const data = await fetchData(`${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}`);
+      console.log('data: ' + data)
       setBotData(data);
     };
     getBotData();

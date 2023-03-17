@@ -7,9 +7,11 @@ import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import LogUploader from './LogUploader';
+import Darkmode from 'drkmd-js'
 
 export default function SetupForm({ display_area = true, webcam = true}) {
   const template = useParams();
+  // console.log("template -> template", template.template)
   const history = useHistory();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -56,10 +58,11 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     };
     setLoading(true);
     window.localStorage.setItem('obj', JSON.stringify(dataObj));
-    postData('https://kpfm2b.sse.codesandbox.io/demo', dataObj)
+    const url = new URL(${import.meta.env.VITE_BASE_URL}, '/v1/demo/?id=', ${botId}).href ${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}'
+    postData(, dataObj)
       .then(async (data) => {
         console.log(data);
-        history.push(`/templates/${template}/preview`);
+        history.push(`/templates/${template.template}/preview`);
       })
       .catch((err) => console.log(err));
   };

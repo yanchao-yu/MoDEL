@@ -19,7 +19,7 @@ const config = {
 // const { Wit } = nodewit
 const app = express();
 var jsonParser = express.json();
-const port = process.env.PORT || 3012;
+const port = process.env.PORT || 3000;
 
 app.use(cors());
 

@@ -2,13 +2,14 @@ import * as React from 'react';
 import { useState } from 'react';
 import { postData } from '../utils';
 
+// @ts-ignore
 export default function BugReport({ session_id }) {
   const [bug_description, setBugDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const handleSubmit = () => {
     setLoading(true);
-    postData('https://kpfm2b.sse.codesandbox.io/bug-report', {
+    postData('${import.meta.env.VITE_BASE_URL}/v1/bug-report', {
       bug_description,
       session_id,
     })

@@ -10,7 +10,7 @@ import { generateID } from '../utils';
 import Darkmode from 'drkmd-js'
 
 export default function TemplatePreview() {
-  const { template } = useParams();
+  const template = useParams();
   const {
     botId,
     title,
@@ -44,7 +44,7 @@ export default function TemplatePreview() {
   const [showBot, toggleBot] = useState(true);
 
   const [isCopied, setCopied] = useClipboard(
-    `${import.meta.env.VITE_BASE_URL}/v1/demo/${template}/${botId}`
+    `${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}`
   );
 
   const [showBugModal, setShowBugModal] = useState(false);
@@ -81,7 +81,7 @@ export default function TemplatePreview() {
         </Modal>
       ) : null}
       <div className="container">
-        <Link className="nav-link" to={`/templates/${template}/setup`}>
+        <Link className="nav-link" to={`/templates/${template.template}/setup`}>
           &#8592; Back to setup
         </Link>
         <h1 className="title">3. Ready!</h1>
@@ -214,7 +214,7 @@ export default function TemplatePreview() {
           <div style={{ textAlign: 'center', marginTop: 20 }}>
             <input
               className="share-input"
-              placeholder={`${import.meta.env.VITE_BASE_URL}/v1/demo/${template}/${botId}`}
+              placeholder={`${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}`}
               disabled
             />{' '}
             <button className="share-button" onClick={setCopied}>
