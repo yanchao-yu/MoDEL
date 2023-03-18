@@ -7,6 +7,7 @@ import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Darkmode from 'drkmd-js'
+
 export default function SetupForm({ display_area = true, webcam = true}) {
   const template = useParams();
   // console.log("template -> template", template.template)
@@ -100,7 +101,9 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       setWebcamId(option.value.deviceId)
   }
 
-  return (
+  // @ts-ignore
+    // @ts-ignore
+    return (
     <div>
       <div className="input-div">
         <label className="styled-label" htmlFor="title">
