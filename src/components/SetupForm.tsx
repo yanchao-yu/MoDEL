@@ -7,7 +7,6 @@ import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Darkmode from 'drkmd-js'
-
 export default function SetupForm({ display_area = true, webcam = true}) {
   const template = useParams();
   // console.log("template -> template", template.template)
@@ -56,7 +55,10 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     };
     setLoading(true);
     window.localStorage.setItem('obj', JSON.stringify(dataObj));
-    const url = `${import.meta.env.VITE_BASE_URL}/v1/demo/?id=${botId}`
+    const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${botId}`;
+    console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
+      console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
+    console.log('dataObj: '+ dataObj);
     postData(url, dataObj)
       .then(async (data) => {
         console.log(data);

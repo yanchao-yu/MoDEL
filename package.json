@@ -15,7 +15,7 @@
     "@tinymce/tinymce-react": "^4.2.0",
     "classnames": "^2.3.2",
     "cors": "2.8.5",
-    "dotenv": "16.0.3",
+    "dotenv": "^16.0.3",
     "drkmd-js": "^1.0.12",
     "express": "4.18.2",
     "firebase": "^9.18.0",

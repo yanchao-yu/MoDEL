@@ -82,8 +82,8 @@ app.post("/v1/demo", jsonParser, async (req, res) => {
  */
 app.get("/v1/demo", async (req, res) => {
   try {
-    console.log(req.query.id);
     const data = await fetchData("botConfig", req.query.id);
+    console.log('retrieved data [' + req.query.id + ']: '+ data);
     res.send(data)
   } catch (err) {
     console.log(err);
