@@ -30,9 +30,9 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     const [loading, setLoading] = useState(false);
 
     const [input, setInput] = useState<any>('');
-    const [userInputObj, setInputObj] = useState<any>({});
-    const [userinput_key, setUserInputKey] = useState<any>('');
-    const [sysoutput_key, setSysOutputKey] = useState<any>('');
+    const [userInputObj, setInputObj] = useState<any>(sampleInputData);
+    const [userinput_key, setUserInputKey] = useState<any>('text');
+    const [sysoutput_key, setSysOutputKey] = useState<any>('response');
     const [output, setOutput] = useState<any>('');
     const [input_keys, setInputKeys] = useState<any>([]);
     const [output_keys, setOutputKeys] = useState<any>([]);
@@ -85,6 +85,13 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       .catch((err) => console.log(err));
     };
 
+    function sampleOutMarkup() {
+        return JSON.stringify(sampleOutputData);
+    }
+
+    function sampleInputMarkup() {
+        return JSON.stringify(sampleInputData);
+    }
     const videoConstraints = {
       width: 640,
       height: 360,
@@ -382,7 +389,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     <textarea className='logplaybackInput'
                               id={"user_input_json"}
                               name="input"
-                        // type={"text"}
+                              placeholder={sampleInputMarkup()}
                               style={{height: '20%', width:'100%'}}
                               onKeyDown={(e) => enterKeyHandler(e, "input")}
                               onChange={(e: any) => setInput(e.target.value)} />
@@ -393,6 +400,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                         className="styled-select"
                         name="UserInputKey"
                         id="UserInputKey"
+                        placeholder="text"
                         style={{ width: '40%', margin: "0 auto" }}
                         onChange={(e) => setUserInputKey(e.target.value)}
                     >
@@ -406,6 +414,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                               id={"sys_output_json"}
                               name="input"
                               style={{height: '20%', width:'100%'}}
+                              placeholder={sampleOutMarkup()}
                               onKeyDown={(e) => enterKeyHandler(e, "output")}
                               onChange={(e: any) => setOutput(e.target.value)} />
                 </div>
@@ -414,6 +423,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     <select className="styled-select"
                             name="SysOutputKey"
                             id="SysOutputKey"
+                            placeholder="text"
                             style={{ width: '40%', margin: "0 auto" }}
                             onChange={(e) => setSysOutputKey(e.target.value)}
                     >

@@ -8,6 +8,7 @@ import BugReport from '../components/BugReport';
 import WebCamera from "../components/WebCamera";
 import { generateID } from '../utils';
 import Darkmode from 'drkmd-js'
+import Webcam from "react-webcam";
 
 export default function TemplatePreview() {
   const template = useParams();
@@ -151,13 +152,19 @@ export default function TemplatePreview() {
                   }`}
                   dangerouslySetInnerHTML={displayAreaMarkup()}
                   >
+                  {template == 'chat-content-webcam' ? (
+                      <Webcam
+                          audio={false}
+                          height="40%"
+                          ref={webcamRef}
+                          screenshotFormat="image/jpeg"
+                          width="40%"
+                          videoConstraints={webcamId}
+                      />
+                  ): null}
                 </div>
               ) : null}
-              {template === 'chat-content-webcam' ? (
-                  <WebCamera
-                      deviceId={webcamId}
-                  />
-              ): null}
+
 
               {developmentPlatform === 'custom-server' ? (
                 <div

@@ -17,7 +17,15 @@ export default function Demo() {
 
   console.log("activeBot: " + activeBot)
 
-  function displayAreaMarkup() { 
+  function descriptionMarkup() {
+    return { __html: activeBot.description };
+  }
+
+  function consentMarkup() {
+    return { __html: activeBot.consentNote };
+  }
+
+  function displayAreaMarkup() {
     return { __html: activeBot.displayContent };
   }
   function botIframe() {
@@ -63,7 +71,9 @@ export default function Demo() {
           <div style={{ textAlign: 'center' }}>
             <h2>{activeBot.title}</h2>
             <p style={{ marginTop: 5 }}>
-              <small style={{ fontSize: 14 }}>{activeBot.description}</small>
+              <div
+                  dangerouslySetInnerHTML={descriptionMarkup()}
+              />
             </p>
             <p style={{ marginTop: 10 }}>
               <strong style={{ color: 'red' }}>
@@ -76,7 +86,9 @@ export default function Demo() {
                 type="checkbox"
                 onChange={(e) => setStart(e.target.checked)}
               />{' '}
-              <label htmlFor="consent">{activeBot.consentNote}</label>
+              <div
+                  dangerouslySetInnerHTML={consentMarkup()}
+              />
             </div>
           </div>
           <div className="divider"></div>
@@ -121,6 +133,9 @@ export default function Demo() {
                       botIcon={activeBot.botIcon}
                       serverURL={activeBot.serverURL}
                       session_id={session_id}
+                      userInputObj={activeBot.userInputObj}
+                      userinputKey={activeBot.userinputKey}
+                      sysoutputKey={activeBot.sysoutputKey}
                       chats={chats}
                       updateChats={updateChats}
                       width={template === 'chat-only' ? 730 : 350}
