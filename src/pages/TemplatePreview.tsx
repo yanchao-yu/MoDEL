@@ -32,6 +32,14 @@ export default function TemplatePreview() {
     feedbackLink,
     displayContent,
   } = JSON.parse(window.localStorage.getItem('obj'));
+  function descriptionMarkup() {
+    return { __html: description };
+  }
+
+  function consentMarkup() {
+    return { __html: consentNote };
+  }
+
   function displayAreaMarkup() {
     return { __html: displayContent };
   }
@@ -93,7 +101,9 @@ export default function TemplatePreview() {
           <div style={{ textAlign: 'center' }}>
             <h2>{title}</h2>
             <p style={{ marginTop: 5 }}>
-              <small style={{ fontSize: 14 }}>{description}</small>
+              <div
+                  dangerouslySetInnerHTML={descriptionMarkup()}
+              />
             </p>
             <p style={{ marginTop: 10 }}>
               <strong style={{ color: 'red' }}>
@@ -106,7 +116,12 @@ export default function TemplatePreview() {
                 type="checkbox"
                 onChange={(e) => setStart(e.target.checked)}
               />{' '}
-              <label htmlFor="consent">{consentNote}</label>
+              <div
+                  dangerouslySetInnerHTML={consentMarkup()}
+              />
+
+              {/*<label htmlFor="consent">*/}
+              {/*  <small style={{ fontSize: 14 }}>dangerouslySetInnerHTML={consentMarkup()}</small></label>*/}
             </div>
           </div>
           <div className="divider"></div>

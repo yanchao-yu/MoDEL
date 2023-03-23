@@ -7,6 +7,7 @@ import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Darkmode from 'drkmd-js'
+import {sampleInputData, sampleOutputData} from '../hooks/sampleData'
 
 export default function SetupForm({ display_area = true, webcam = true}) {
     const template = useParams();
@@ -37,6 +38,8 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     const [output_keys, setOutputKeys] = useState<any>([]);
 
     const editorRef = useRef(null);
+    const descriptionEditorRef = useRef(null);
+    const concentEditorRef = useRef(null);
 
     const darkmode = new Darkmode()
     darkmode.toggle()
@@ -47,7 +50,8 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     const dataObj = {
         "botId": botId,
         "title": title,
-        "description": description,
+        "description":
+            descriptionEditorRef.current?.getContent() || '<p>No content provided</p>',
         "embedCode": embedCode,
         "developmentPlatform": developmentPlatform,
         "botName": botName,
@@ -57,14 +61,15 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         "userInputObj": userInputObj,
         "userinputKey": userinput_key,
         "sysoutputKey": sysoutput_key,
-        "consentNote": consentNote,
+        "consentNote":
+            concentEditorRef.current?.getContent() || '<p>No content provided</p>',
         "enableBugReport": enableBugReport,
         "enableFeedback": enableFeedback,
         "enableVoice": enableVoice,
         "webcamId": webcamId,
         "feedbackLink": feedbackLink || 'https://forms.gle/PE9Sef4tLrQPW6bE6',
         "displayContent":
-        editorRef.current?.getContent() || '<p>No content provided</p>',
+            editorRef.current?.getContent() || '<p>No content provided</p>',
     };
     setLoading(true);
     window.localStorage.setItem('obj', JSON.stringify(dataObj));
@@ -80,7 +85,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       .catch((err) => console.log(err));
     };
 
-
     const videoConstraints = {
       width: 640,
       height: 360,
@@ -95,7 +99,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
           [webcamRef]
       );
     };
-
 
     const [devices, setDevices] = React.useState([]);
     const [select_device, setSelectDevices] = React.useState([]);
@@ -159,73 +162,17 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         <label className="styled-label" htmlFor="description">
           Description
         </label>
-        <input
-          className="styled-input"
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+          <Editor
+              apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
+              onInit={(evt, editor) => (descriptionEditorRef.current = editor)}
+              initialValue=''
+              init={{
+                  height: 500,
+                  content_style:
+                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+              }}
+          />
       </div>
-      {webcam ? (
-        <div>
-            <div className="input-div">
-                <label className="styled-label">Display Area</label>
-                <Editor
-                    apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
-                    onInit={(evt, editor) => (editorRef.current = editor)}
-                    initialValue='<h1>Display Area Title</h1>
-            <p>You can add one or more paragraphs to the display area</p>
-            <p>Feel free to add more elements like tables and other things as may be required...</p>'
-                    init={{
-                        height: 500,
-                        menubar: 'file edit view insert format tools table help',
-                        plugins: [
-                            'advlist',
-                            'autolink',
-                            'lists',
-                            'link',
-                            'charmap',
-                            'preview',
-                            'anchor',
-                            'searchreplace',
-                            'visualblocks',
-                            'code',
-                            'fullscreen',
-                            'insertdatetime',
-                            'table',
-                            'code',
-                            'help',
-                            'wordcount',
-                        ],
-                        toolbar:
-                            'undo redo | blocks | ' +' forecolor alignleft aligncenter ' +
-                            'alignright alignjustify | bullist numlist outdent indent | ' +
-                            'removeformat | help',
-                        content_style:
-                            'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                    }}
-                /></div>
-
-            <label className="styled-label" htmlFor="device">
-                Choose Camera Device
-            </label>
-            <Dropdown options={devices}
-                      onChange={onSelect}
-                      value={defaultOption}
-                      placeholder="Select an option"
-                      arrowClosed={<span className="arrow-closed" />}
-                      arrowOpen={<span className="arrow-open" />}/>
-            <label><br /></label>
-            <Webcam
-                audio={false}
-                height={videoConstraints.height}
-                ref={webcamRef}
-                screenshotFormat="image/jpeg"
-                width={videoConstraints.width}
-                videoConstraints={{deviceId: select_device.deviceId}}
-            />
-        </div>
-      ) : null}
         {display_area ? (
             <div className="input-div">
                 <label className="styled-label">Display Area</label>
@@ -270,6 +217,66 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                         content_style:
                             'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                     }}
+                />
+            </div>
+        ) : null}
+        {webcam ? (
+            <div>
+                <div className="input-div">
+                    <label className="styled-label">Display Area</label>
+                    <Editor
+                        apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
+                        onInit={(evt, editor) => (editorRef.current = editor)}
+                        initialValue='<h1>Display Area Title</h1>
+                <p>You can add one or more paragraphs to the display area</p>
+                <p>Feel free to add more elements like tables and other things as may be required...</p>'
+                        init={{
+                            height: 500,
+                            menubar: 'file edit view insert format tools table help',
+                            plugins: [
+                                'advlist',
+                                'autolink',
+                                'lists',
+                                'link',
+                                'charmap',
+                                'preview',
+                                'anchor',
+                                'searchreplace',
+                                'visualblocks',
+                                'code',
+                                'fullscreen',
+                                'insertdatetime',
+                                'table',
+                                'code',
+                                'help',
+                                'wordcount',
+                            ],
+                            toolbar:
+                                'undo redo | blocks | ' +' forecolor alignleft aligncenter ' +
+                                'alignright alignjustify | bullist numlist outdent indent | ' +
+                                'removeformat | help',
+                            content_style:
+                                'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                        }}
+                    /></div>
+
+                <label className="styled-label" htmlFor="device">
+                    Choose Camera Device
+                </label>
+                <Dropdown options={devices}
+                          onChange={onSelect}
+                          value={defaultOption}
+                          placeholder="Select an option"
+                          arrowClosed={<span className="arrow-closed" />}
+                          arrowOpen={<span className="arrow-open" />}/>
+                <label><br /></label>
+                <Webcam
+                    audio={false}
+                    height={videoConstraints.height}
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    width={videoConstraints.width}
+                    videoConstraints={{deviceId: select_device.deviceId}}
                 />
             </div>
         ) : null}
@@ -441,12 +448,15 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         <label className="styled-label" htmlFor="consent-text">
           Consent text
         </label>
-        <textarea
-          id="consent-text"
-          className="styled-textarea"
-          value={consentNote}
-          onChange={(e) => setConsentText(e.target.value)}
-        />
+        <Editor
+          apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
+          onInit={(evt, editor) => (concentEditorRef.current = editor)}
+          initialValue='<p> I agree to the following... </p>'
+          init={{
+              height: 500,
+              content_style:
+                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          }}/>
       </div>
       <div className="divider-no-line"></div>
       <h3>&#8212; Get Feedback</h3>
