@@ -62,7 +62,7 @@ export default function Home() {
         Get started
       </Link>
       <span style={{marginLeft: '10px'}}>
-        <Link target="_blank" className="button" to="/logplayback">
+        <Link className="button" to="/logplayback">
           Log Playback
         </Link>
       </span>
@@ -72,7 +72,7 @@ export default function Home() {
         session_id={generateID()}
         // chats={chats}
         // updateChats={updateChats}
-        width={280}
+        width={"60%"}
         height={350}
       />
     </div>

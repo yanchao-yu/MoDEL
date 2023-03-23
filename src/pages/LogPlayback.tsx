@@ -7,6 +7,9 @@ import { useState } from 'react';
 import Dropdown from "react-dropdown";
 import * as React from "react";
 import Select from "react-select";
+import JSONInput from 'react-json-editor-ajrm';
+import locale    from 'react-json-editor-ajrm/locale/en';
+import {sampleInputData, sampleOutputData} from '../hooks/sampleData'
 
 
 
@@ -47,36 +50,11 @@ const LogPlayback = () => {
     }
 
     const enterKeyHandler = (e: any, type: string) => {
-        // console.log({ value: e.target.value, key: e.key })
         if (e?.key === 'Enter') {
             const d = type === 'input' ? input : output
             const text = JSON.parse(d || "");
             getKeys(text, type)
         }
-    }
-
-    const getKeysFromInput = () => {
-        const object = JSON.parse(input|| "");
-        let object_keys = Object.keys(object)
-        let keys_object = object_keys.length > 0
-            && object_keys.map((item, i) => {
-                return (
-                    <option key={i} value={item}>{item}</option>
-                )
-            }, this);
-        return keys_object
-    }
-
-    const getKeysFromOutput = () => {
-        const object = JSON.parse(output|| "");
-        let object_keys = Object.keys(object)
-        let keys_object = object_keys.length > 0
-            && object_keys.map((item, i) => {
-                return (
-                    <option key={i} value={item}>{item}</option>
-                )
-            }, this);
-        return keys_object
     }
 
     const getKeys = (json_str: any, stype: string) => {
@@ -97,28 +75,8 @@ const LogPlayback = () => {
         }
     }
 
-
-    const onInputSelect = (option: any) => {
-        setUserInputKey(option.value)
-    }
-    const onOutputSelect = (option: any) => {
-        setSysOutputKey(option.value)
-    }
-
-    const handleInputChange = (input: string) => {
-        console.log(input);
-        // setOptions(
-        //     initialOptions.filter(opt => {
-        //         console.log(opt);
-        //         return (
-        //             opt && opt.value && opt.value.contains && opt.value.contains(input)
-        //         );
-        //     })
-        // );
-    };
-
     return (
-        <div style={{ width: 400, margin: "0 auto" }}>
+        <div style={{ width: '80%', margin: "0 auto" }}>
 
             <Link className="nav-link" to="/home">
                 &#8592; Back to Home Page
@@ -129,7 +87,7 @@ const LogPlayback = () => {
                         <img src={Bot} width={20} /> {"Log PlayBack"}
                     </h3>
                 </div>
-                <div id="chat-window" style={{ height: "60vh" }}>
+                <div id="chat-window" style={{ height: "60vh" , width:'100%'}}>
                     {data?.map((item: any, index: number) => (
                         <div
                             key={index}
@@ -173,7 +131,13 @@ const LogPlayback = () => {
                 <div>
                     <div>
                         <label>Please provide an server input example (JSON object) </label>
-                        <input className='logplaybackInput' id={"user_input_json"} name="input" type={"text"} onKeyDown={(e) => enterKeyHandler(e, "input")} onChange={(e: any) => setInput(e.target.value)} />
+                        <textarea className='logplaybackInput'
+                                id={"user_input_json"}
+                                name="input"
+                               // type={"text"}
+                                style={{height: '20%', width:'100%'}}
+                                onKeyDown={(e) => enterKeyHandler(e, "input")}
+                                  onChange={(e: any) => setInput(e.target.value)} />
                     </div>
                     <div>
                         <label>Please tell me where I should provide the user input: </label>
@@ -181,6 +145,7 @@ const LogPlayback = () => {
                             className="styled-select"
                             name="UserInputKey"
                             id="UserInputKey"
+                            style={{ width: '40%', margin: "0 auto" }}
                             onChange={(e) => setUserInputKey(e.target.value)}
                         >
                             {input_keys}
@@ -189,29 +154,38 @@ const LogPlayback = () => {
                     </div>
                     <div>
                         <label>Please provide an server output example (JSON object) </label>
-                        <input className='logplaybackInput' id={"sys_output_json"} name="input" type={"text"} onKeyDown={(e) => enterKeyHandler(e, "output")} onChange={(e: any) => setOutput(e.target.value)} />
+                        <textarea className='logplaybackInput'
+                                id={"sys_output_json"}
+                                name="input"
+                                style={{height: '20%', width:'100%'}}
+                                onKeyDown={(e) => enterKeyHandler(e, "output")}
+                                  onChange={(e: any) => setOutput(e.target.value)} />
                     </div>
                     <div>
                         <label>Please tell me where I can find the system response: </label>
                         <select className="styled-select"
                                 name="SysOutputKey"
                                 id="SysOutputKey"
-                                onChange={(e) => setSysOutputKey(e.target.value)}>
+                                style={{ width: '40%', margin: "0 auto" }}
+                                onChange={(e) => setSysOutputKey(e.target.value)}
+                        >
                             {output_keys}
                         </select>
                     </div>
                 </div>
 
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                    <UploadButton uploader={uploader}
-                        onComplete={onCompleteSuccess}>
-                        {({ onClick }) =>
-                            <button className='logPlayback' onClick={onClick}>
-                                Upload Log File
-                            </button>
-                        }
-                    </UploadButton>
-                </div>
+                {input && output && sysoutput_key && userinput_key ? (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        <UploadButton uploader={uploader}
+                                      onComplete={onCompleteSuccess}>
+                            {({ onClick }) =>
+                                <button className='logPlayback' onClick={onClick}>
+                                    Upload Log File
+                                </button>
+                            }
+                        </UploadButton>
+                    </div>
+                ) : null}
             </div>
         </div>
     );

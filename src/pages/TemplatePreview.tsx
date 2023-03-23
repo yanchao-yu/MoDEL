@@ -22,6 +22,9 @@ export default function TemplatePreview() {
     botIcon,
     serverURL,
     consentNote,
+    userInputObj,
+    userinputKey,
+    sysoutputKey,
     enableBugReport,
     enableFeedback,
     enableVoice,
@@ -155,6 +158,9 @@ export default function TemplatePreview() {
                     botIcon={botIcon}
                     serverURL={serverURL}
                     session_id={session_id}
+                    userInputObj={userInputObj}
+                    userinputKey={userinputKey}
+                    sysoutputKey={sysoutputKey}
                     chats={chats}
                     enableVoice={enableVoice}
                     updateChats={updateChats}

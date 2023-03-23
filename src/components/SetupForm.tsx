@@ -9,31 +9,40 @@ import 'react-dropdown/style.css';
 import Darkmode from 'drkmd-js'
 
 export default function SetupForm({ display_area = true, webcam = true}) {
-  const template = useParams();
-  // console.log("template -> template", template.template)
-  const history = useHistory();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [embedCode, setEmbedCode] = useState('');
-  const [developmentPlatform, setDevelopmentPlatform] = useState('');
-  const [botName, setBotName] = useState('');
-  const [botIntro, setBotIntro] = useState('');
-  const [botIcon, setBotIcon] = useState('');
-  const [serverURL, setServerURL] = useState('');
-  const [consentNote, setConsentText] = useState('I agree to the following...');
-  const [enableBugReport, setEnableBugReport] = useState(false);
-  const [webcamId, setWebcamId] = useState('');
-  const [enableFeedback, setEnableFeedback] = useState(false);
-  const [enableVoice, setEnableVoice] = useState(false);
-  const [feedbackLink, setFeedbackLink] = useState('');
-  const [loading, setLoading] = useState(false);
+    const template = useParams();
+    // console.log("template -> template", template.template)
+    const history = useHistory();
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [embedCode, setEmbedCode] = useState('');
+    const [developmentPlatform, setDevelopmentPlatform] = useState('');
+    const [botName, setBotName] = useState('');
+    const [botIntro, setBotIntro] = useState('');
+    const [botIcon, setBotIcon] = useState('');
+    const [serverURL, setServerURL] = useState('');
+    const [consentNote, setConsentText] = useState('I agree to the following...');
+    const [enableBugReport, setEnableBugReport] = useState(false);
+    const [webcamId, setWebcamId] = useState('');
+    const [enableFeedback, setEnableFeedback] = useState(false);
+    const [enableVoice, setEnableVoice] = useState(false);
+    const [feedbackLink, setFeedbackLink] = useState('');
+    const [loading, setLoading] = useState(false);
 
-  const editorRef = useRef(null);
+    const [input, setInput] = useState<any>('');
+    const [userInputObj, setInputObj] = useState<any>({});
+    const [userinput_key, setUserInputKey] = useState<any>('');
+    const [sysoutput_key, setSysOutputKey] = useState<any>('');
+    const [output, setOutput] = useState<any>('');
+    const [input_keys, setInputKeys] = useState<any>([]);
+    const [output_keys, setOutputKeys] = useState<any>([]);
 
-  const darkmode = new Darkmode()
+    const editorRef = useRef(null);
+
+    const darkmode = new Darkmode()
     darkmode.toggle()
     darkmode.attach()
-  const save = () => {
+
+    const save = () => {
     const botId = generateString(8);
     const dataObj = {
         "botId": botId,
@@ -45,6 +54,9 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         "botIntro": botIntro,
         "botIcon": botIcon,
         "serverURL": serverURL,
+        "userInputObj": userInputObj,
+        "userinputKey": userinput_key,
+        "sysoutputKey": sysoutput_key,
         "consentNote": consentNote,
         "enableBugReport": enableBugReport,
         "enableFeedback": enableFeedback,
@@ -66,40 +78,67 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         history.push(`/templates/${template.template}/preview`);
       })
       .catch((err) => console.log(err));
-  };
+    };
 
 
-  const videoConstraints = {
+    const videoConstraints = {
       width: 640,
       height: 360,
       facingMode: "user"
-  };
+    };
 
-  const webcamRef = React.useRef(null);
-  const WebcamCapture = async () => {
+    const webcamRef = React.useRef(null);
+    const WebcamCapture = async () => {
       const capture = React.useCallback(
           () => {
                 const imageSrc = webcamRef.current.getScreenshot();},
           [webcamRef]
       );
-  };
+    };
 
 
-  const [devices, setDevices] = React.useState([]);
+    const [devices, setDevices] = React.useState([]);
     const [select_device, setSelectDevices] = React.useState([]);
-  const handleDevices = React.useCallback((mediaDevices) => {
+    const handleDevices = React.useCallback((mediaDevices) => {
       setDevices(mediaDevices.filter(({kind}:{kind:string}) => kind === "videoinput"))
-  }, [setDevices]);
+    }, [setDevices]);
 
-  React.useEffect(() => {
+    React.useEffect(() => {
       navigator.mediaDevices.enumerateDevices().then(handleDevices);
       },[handleDevices]);
-  const defaultOption = devices[0];
+    const defaultOption = devices[0];
 
-  const onSelect = (option) => {
+    const onSelect = (option) => {
       setSelectDevices(option.value)
       setWebcamId(option.value.deviceId)
-  }
+    }
+
+    const enterKeyHandler = (e: any, type: string) => {
+        if (e?.key === 'Enter') {
+            const d = type === 'input' ? input : output
+            const text = JSON.parse(d || "");
+            getKeys(text, type)
+        }
+    }
+
+    const getKeys = (json_str: any, stype: string) => {
+        let object_keys = Object.keys(json_str)
+        let keys_object = object_keys.length > 0
+            && object_keys.map((item, i) => {
+                return (
+                    <option key={i} value={item}>{item}</option>
+                )
+            });
+
+        console.log("keys_object: " + keys_object)
+        if (stype === 'input'){
+            setInputObj(json_str)
+            setInputKeys(keys_object)
+        }
+        else if (stype === 'output'){
+            setOutputKeys(keys_object)
+        }
+    }
 
   // @ts-ignore
     // @ts-ignore
@@ -179,10 +218,10 @@ export default function SetupForm({ display_area = true, webcam = true}) {
             <label><br /></label>
             <Webcam
                 audio={false}
-                height={360}
+                height={videoConstraints.height}
                 ref={webcamRef}
                 screenshotFormat="image/jpeg"
-                width={640}
+                width={videoConstraints.width}
                 videoConstraints={{deviceId: select_device.deviceId}}
             />
         </div>
@@ -330,24 +369,69 @@ export default function SetupForm({ display_area = true, webcam = true}) {
               onChange={(e) => setServerURL(e.currentTarget.value)}
             />
           </div>
-          <div className="input-div">
-            <label className="styled-label">"Request" object format</label>
-            <input
-              disabled
-              type="text"
-              placeholder={`{ "session_id": "001", "user_id": "002", "text": "..."}`}
-              className="styled-input"
-            />
-          </div>
-          <div className="input-div">
-            <label className="styled-label">"Response" object format</label>
-            <input
-              disabled
-              type="text"
-              placeholder={`{"session_id": "001", "user_id": "002", "nlu": {"text": "...", "response": "...", ...}}`}
-              className="styled-input"
-            />
-          </div>
+            <div>
+                <div>
+                    <label>Please provide an server input example (JSON object) </label>
+                    <textarea className='logplaybackInput'
+                              id={"user_input_json"}
+                              name="input"
+                        // type={"text"}
+                              style={{height: '20%', width:'100%'}}
+                              onKeyDown={(e) => enterKeyHandler(e, "input")}
+                              onChange={(e: any) => setInput(e.target.value)} />
+                </div>
+                <div>
+                    <label>Please tell me where I should provide the user input: </label>
+                    <select
+                        className="styled-select"
+                        name="UserInputKey"
+                        id="UserInputKey"
+                        style={{ width: '40%', margin: "0 auto" }}
+                        onChange={(e) => setUserInputKey(e.target.value)}
+                    >
+                        {input_keys}
+                    </select>
+
+                </div>
+                <div>
+                    <label>Please provide an server output example (JSON object) </label>
+                    <textarea className='logplaybackInput'
+                              id={"sys_output_json"}
+                              name="input"
+                              style={{height: '20%', width:'100%'}}
+                              onKeyDown={(e) => enterKeyHandler(e, "output")}
+                              onChange={(e: any) => setOutput(e.target.value)} />
+                </div>
+                <div>
+                    <label>Please tell me where I can find the system response: </label>
+                    <select className="styled-select"
+                            name="SysOutputKey"
+                            id="SysOutputKey"
+                            style={{ width: '40%', margin: "0 auto" }}
+                            onChange={(e) => setSysOutputKey(e.target.value)}
+                    >
+                        {output_keys}
+                    </select>
+                </div>
+            </div>
+          {/*<div className="input-div">*/}
+          {/*  <label className="styled-label">"Request" object format</label>*/}
+          {/*  <input*/}
+          {/*    disabled*/}
+          {/*    type="text"*/}
+          {/*    placeholder={`{ "session_id": "001", "user_id": "002", "text": "..."}`}*/}
+          {/*    className="styled-input"*/}
+          {/*  />*/}
+          {/*</div>*/}
+          {/*<div className="input-div">*/}
+          {/*  <label className="styled-label">"Response" object format</label>*/}
+          {/*  <input*/}
+          {/*    disabled*/}
+          {/*    type="text"*/}
+          {/*    placeholder={`{"session_id": "001", "user_id": "002", "nlu": {"text": "...", "response": "...", ...}}`}*/}
+          {/*    className="styled-input"*/}
+          {/*  />*/}
+          {/*</div>*/}
         </div>
       ) : null}
       <div className="divider-no-line"></div>
@@ -399,17 +483,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
             />{' '}
             <label htmlFor="feedback-btn">Enable Voice Input/Output</label>
         </div>
-      <div className="input-div">
-        <input
-          disabled
-          id="replay-btn"
-          type="checkbox"
-          onChange={(e) => setEnableBugReport(e.target.checked)}
-        />{' '}
-        <label htmlFor="replay-btn">
-          Enable Replay Conversations <small>(coming soon)</small>
-        </label>
-      </div>
       <button className="button" onClick={save} disabled={loading}>
         {loading ? 'Please wait...' : 'Save and Preview'}
       </button>

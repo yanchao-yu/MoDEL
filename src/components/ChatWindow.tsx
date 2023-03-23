@@ -16,9 +16,10 @@ export default function ChatWindow({
   botIcon = 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png',
   serverURL,
   session_id,
-  // chats,
+  userInputObj,
+  userinputKey,
+  sysoutputKey,
   enableVoice,
-  // updateChats,
   width = 300,
   height = 400,
 }: ChatWindowInterface) {
@@ -120,12 +121,14 @@ export default function ChatWindow({
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === 'Enter') {
+        let shallow = Object.assign({}, userInputObj);
+        shallow["session_id"] = session_id
+        shallow["user_id"] = uuidv4()
+        shallow["speaker"] = 'user'
+        shallow[userinputKey] = e.currentTarget.value
+        console.log('query_object: ' + JSON.stringify(shallow))
       updateChats([...chats, { text: e.currentTarget.value, speaker: 'user' }]);
-      postData(serverURL || 'https://kpfm2b.sse.codesandbox.io', {
-        session_id,
-        user_id: uuidv4(),
-        user_input: e.currentTarget.value,
-      })
+      postData(serverURL || `${import.meta.env.VITE_SERVER_URL}/v1`, shallow)
         .then(async (data) => {
           if (data) {
             const {
@@ -155,7 +158,7 @@ export default function ChatWindow({
   const AutoScrollConversations = () => {
     const containerRef = useRef();
     useEffect(() => containerRef.current.scrollIntoView());
-    return <div style={{ width: 350 }} ref={containerRef} />;
+    return <div style={{ width: "85%" }} ref={containerRef} />;
   };
 
   // Autoscroll Chats Window -> END!
