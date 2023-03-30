@@ -5,6 +5,7 @@ import cors from 'cors'
 import { initializeApp } from "firebase/app";
 import { doc, setDoc, getDoc} from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
+import axios from "axios";
 
 const config = {
   apiKey: "AIzaSyDv5yUd4QxeFMnYY4GQQqYJa0oPt88Ji8Q",
@@ -121,9 +122,19 @@ app.post("/v1", jsonParser, async (req, res) => {
 
 const handleMessage = async (message) => {
   try {
-    const client = new Wit({ accessToken });
-    const response = await client.message(message, {});
-    return response;
+    const result = await axios.post(`http://localhost:7002/model/parse`,
+        JSON.stringify({"text": message}),
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            "Access-Control-Allow-Credentials": true,
+            "Access-Control-Allow-Origin": "*"
+          },
+          responseType: 'json',
+          // httpsAgent: new https.Agent({rejectUnauthorized: false})
+        })
+    console.log(JSON.stringify(result));
+    return result;
   } catch (err) {
     console.log(err);
   }

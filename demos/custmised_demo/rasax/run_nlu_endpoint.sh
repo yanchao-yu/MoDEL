@@ -9,9 +9,11 @@ echo $SCRIPTPATH
 PROJECTROOTPATH="$(dirname "$SCRIPTPATH")"
 echo $PROJECTROOTPATH
 
-source ${SCRIPTPATH}/ENV/bin/activate
-"${SCRIPTPATH}"/ENV/bin/pip3 install --upgrade setuptools pip
+#pyenv install 3.7.9
+pyenv local 3.7.9
 
-cd "${SCRIPTPATH}"/src
-rasa run -m nlu-20220713-211038-brownian-crow.tar.gz --enable-api --port 7002
+python -m venv .venv
+
+source ${SCRIPTPATH}/.venv/bin/activate
+rasa run -m nlu-20230330-231450-devout-snipe.tar.gz --enable-api --port 7002 --cors "*"
 
