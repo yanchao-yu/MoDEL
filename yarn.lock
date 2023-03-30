@@ -2927,6 +2927,11 @@ wrap-ansi@^7.0.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
 
+xtypejs@^0.7.1:
+  version "0.7.1"
+  resolved "https://registry.npmjs.org/xtypejs/-/xtypejs-0.7.1.tgz"
+  integrity sha512-s7zpV5uduE+/iREPlWOXS5Gb0IpfSZ/dye0KS4XaVix7yftDkHHrqfznXx1tXZ3rbWksBiF3TcIxN6QrcU1eRQ==
+
 y18n@^5.0.5:
   version "5.0.8"
   resolved "https://registry.npmjs.org/y18n/-/y18n-5.0.8.tgz"

@@ -38,7 +38,8 @@
     "speak-tts": "^2.0.8",
     "url-join": "^5.0.0",
     "uuid": "^9.0.0",
-    "web-button-styles": "^3.1.0"
+    "web-button-styles": "^3.1.0",
+    "xtypejs": "^0.7.1"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",

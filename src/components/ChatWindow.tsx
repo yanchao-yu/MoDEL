@@ -9,6 +9,7 @@ import 'regenerator-runtime/runtime'
 import Speech from "speak-tts";
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
 import { DataContext } from '../app/store';
+import xtype from 'xtypejs'
 
 
 export default function ChatWindow({
@@ -130,16 +131,54 @@ export default function ChatWindow({
       updateChats([...chats, { text: e.currentTarget.value, speaker: 'user' }]);
       postData(serverURL || `${import.meta.env.VITE_SERVER_URL}/v1`, shallow)
         .then(async (data) => {
-          if (data) {
-            const {
-              nlu: { response },
-            } = data;
+            const response = getResponse(data);
             setBotResponse(response);
-          }
         })
         .catch((err) => console.log(err));
       e.currentTarget.value = '';
     }
+  };
+
+  const getResponse = (data: any) => {
+      const data_type = xtype(data)
+      if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
+          return data.map((item: any, index: number ) => {
+              const keys = sysoutputKey.split('.');
+              alert("keys: "+ JSON.stringify(keys));
+
+              let temp_data = Object.assign({}, item);
+              let response = "";
+              keys.forEach(
+                  function (k: any) {
+                      temp_data = temp_data[k]
+                      alert("temp_data: "+ JSON.stringify(temp_data));
+                      const tmp_data_type = xtype(data)
+                      alert("tmp_data_type: "+ tmp_data_type);
+                      if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace" || tmp_data_type === "multi_elem_array") {
+                          response = temp_data
+                      }
+                  });
+              alert("response: "+ response);
+              return response;
+          });
+      }
+      else if ( data_type ===  "single_prop_object" || data_type === 'multi_prop_object'){
+          const keys = sysoutputKey.split('.');
+          let temp_data = Object.assign({}, data);
+          let response = "";
+          keys.forEach(
+                  function(k: any){
+                      temp_data = temp_data[k]
+                      const tmp_data_type = xtype(data)
+                      if ( tmp_data_type ===  "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace"){
+                          response = temp_data
+                      }
+                  });
+
+          alert(JSON.stringify(response))
+          alert(response)
+          return response;
+      }
   };
 
   useEffect(() => {

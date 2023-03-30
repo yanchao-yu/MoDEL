@@ -7,6 +7,8 @@ import Webcam from "react-webcam";
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Darkmode from 'drkmd-js'
+import xtype from 'xtypejs'
+
 import {sampleInputData, sampleOutputData} from '../hooks/sampleData'
 
 export default function SetupForm({ display_area = true, webcam = true}) {
@@ -131,26 +133,65 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         }
     }
 
-    const getKeys = (json_str: any, stype: string) => {
-        let object_keys = Object.keys(json_str)
-        let keys_object = object_keys.length > 0
-            && object_keys.map((item, i) => {
-                return (
-                    <option key={i} value={item}>{item}</option>
-                )
-            });
+    const getKeys = (json: any, stype: string) => {
+        let keys: JSX.Element[] = []
 
-        console.log("keys_object: " + keys_object)
-        if (stype === 'input'){
-            setInputObj(json_str)
-            setInputKeys(keys_object)
+        const data_type = xtype(json)
+        // Check whether the system receive a JSON Array
+        if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
+            // iterate each element in the JSON Array
+            json.forEach(
+                function(d: any){
+                    let object_keys = Object.keys(d)
+                    object_keys.forEach(
+                        function(k: any){
+                            keys.push(<option key={k} value={k}>{k}</option>)
+                            // Check whether the value is another JSON Object
+                            const value_type = xtype(json[k])
+                            if ( value_type ===  "single_prop_object" || value_type === 'multi_prop_object'){
+                                let sub_keys = Object.keys(json[k])
+                                let sub_keys_str = sub_keys.length > 0
+                                    && sub_keys.map((sub_key, j) => {
+                                        keys.push(<option key={k+'.'+j} value={k+'.'+sub_key}>{k+'.'+sub_key}</option>)
+                                    });
+                            }
+                        });
+                }
+            )
         }
+        // Check whether the system receive a JSON Object
+        else if ( data_type ===  "single_prop_object" || data_type === 'multi_prop_object'){
+            let object_keys = Object.keys(json)
+            // iterate each key in the JSON object
+            object_keys.forEach(
+                function(key: any){
+                    keys.push(<option key={key} value={key}>{key}</option>)
+                    const value_type = xtype(json[key])
+                    // Check whether the value is another JSON Object
+                    if ( value_type ===  "single_prop_object" || value_type === 'multi_prop_object'){
+                        let sub_keys = Object.keys(json[key])
+                        sub_keys.forEach(
+                            function(sub_key: any){
+                                keys.push(<option key={key+'.'+sub_key} value={key+'.'+sub_key}>{key+'.'+sub_key}</option>)
+                            });
+                    }
+                }
+            );
+        }
+        // Add keys and object into the input config
+        if (stype === 'input'){
+            setInputObj(json)
+            setInputKeys(keys)
+            alert("input_keys: " + input_keys)
+        }
+        // Add keys and object into the output config
         else if (stype === 'output'){
-            setOutputKeys(keys_object)
+            setOutput(json)
+            setOutputKeys(keys)
+            alert("output_keys: " + output_keys)
         }
     }
 
-  // @ts-ignore
     // @ts-ignore
     return (
     <div>
