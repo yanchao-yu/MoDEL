@@ -10,11 +10,9 @@ PROJECTROOTPATH="$(dirname "$SCRIPTPATH")"
 echo $PROJECTROOTPATH
 
 #pyenv install 3.7.9
-pyenv local 3.7.9
-
-python -m venv .venv
+#pyenv local 3.7.9
+#
+#python -m venv .venv
 
 source ${SCRIPTPATH}/.venv/bin/activate
-cd "${SCRIPTPATH}"/src
-rasa run -m models/nlu-20230331-212549-navy-canteen.tar.gz --enable-api --port 7002 --cors "*"
-
+${SCRIPTPATH}/.venv/bin/pip3 install -r requirements.txt

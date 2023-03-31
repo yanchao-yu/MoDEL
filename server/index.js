@@ -109,57 +109,6 @@ app.post("/v1/bug-report", jsonParser, async (req, res) => {
   }
 });
 
-/**
- * Code to generate a simple chat-bot example.
- */
-app.post("/v1", jsonParser, async (req, res) => {
-  const { session_id, user_id, text, ...rest } = req.body;
-  handleMessage(text).then((data) => {
-    const response = handleQuery(data.intents);
-    res.send({ session_id, user_id, nlu: { ...response, ...data }, ...rest });
-  });
-});
-
-const handleMessage = async (message) => {
-  try {
-    const result = await axios.post(`http://localhost:7002/model/parse`,
-        JSON.stringify({"text": message}),
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            "Access-Control-Allow-Credentials": true,
-            "Access-Control-Allow-Origin": "*"
-          },
-          responseType: 'json',
-          // httpsAgent: new https.Agent({rejectUnauthorized: false})
-        })
-    console.log(JSON.stringify(result));
-    return result;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const handleQuery = (intents) => {
-  if (intents.length <= 0) {
-    return { response: "Can you say that again?" };
-  }
-  const query = intents[0].name;
-  switch (query) {
-    case "greeting":
-      return { response: "Hello, how are you today?" };
-    case "movie_recommendation":
-      return { response: "Oh yes I can help recommend a movie to you" };
-    case "greeting_acknowledgement":
-      return { response: "Great!" };
-    case "exit_greeting":
-      return { response: "Talk to you later" };
-    case "appreciation":
-      return { response: "Awww! thanks for the kind word" };
-    default:
-      return { response: "Can you say that again?" };
-  }
-};
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
