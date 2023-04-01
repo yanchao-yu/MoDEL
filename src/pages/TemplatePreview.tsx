@@ -49,6 +49,12 @@ export default function TemplatePreview() {
     return { __html: embedCode };
   }
 
+  const videoConstraints = {
+    width: 640,
+    height: 360,
+    facingMode: "user"
+  };
+
   const [start, setStart] = useState(false);
   const [chats, updateChats] = useState([
     { text: botIntro === '' ? 'Hello' : botIntro, speaker: 'bot' },
@@ -132,10 +138,10 @@ export default function TemplatePreview() {
               style={{
                 position: 'relative',
                 // flexDirection:
-                //   template === 'chat-content-webcam' ? 'row-reverse' : 'row',
+                //   template.template === 'chat-content-webcam' ? 'row-reverse' : 'row',
               }}
             >
-              {template === 'chat-content-background' &&
+              {template.template === 'chat-content-background' &&
               developmentPlatform !== '' ? (
                 <button
                   className="button slategrey"
@@ -145,22 +151,26 @@ export default function TemplatePreview() {
                   {showBot ? 'X' : '+'}
                 </button>
               ) : null}
-              {template !== 'chat-only' ? (
+              {template.template !== 'chat-only' ? (
+                <div>
                 <div
                   className={`display-area ${
-                    template === 'chat-content-background' ? 'full-width' : ''
+                      template.template !== 'chat-only' ? 'full-width' : ''
                   }`}
                   dangerouslySetInnerHTML={displayAreaMarkup()}
-                  >
-                  {template == 'chat-content-webcam' ? (
+                  />
+
+                  {template.template == 'chat-content-webcam' ? (
+                    <div>
                       <Webcam
-                          audio={false}
-                          height="40%"
-                          ref={webcamRef}
-                          screenshotFormat="image/jpeg"
-                          width="40%"
-                          videoConstraints={webcamId}
+                        audio={false}
+                        height="100%"
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        width="100%"
+                        videoConstraints={{deviceId: {webcamId}}}
                       />
+                    </div>
                   ): null}
                 </div>
               ) : null}
@@ -169,7 +179,7 @@ export default function TemplatePreview() {
               {developmentPlatform === 'custom-server' ? (
                 <div
                   className={
-                    template === 'chat-content-background'
+                    template.template === 'chat-content-background'
                       ? 'bot-area floating'
                       : 'bot-area'
                   }
@@ -186,16 +196,16 @@ export default function TemplatePreview() {
                     chats={chats}
                     enableVoice={enableVoice}
                     updateChats={updateChats}
-                    width={template === 'chat-only' ? 730 : 350}
+                    width={template.template === 'chat-only' ? 730 : 350}
                   />
                 ) : null}
                 </div>
               ) : (
                 <div
                   className={`bot-area ${
-                    template === 'chat-only'
+                    template.template === 'chat-only'
                       ? 'full-iframe'
-                      : template === 'chat-content-background'
+                      : template.template === 'chat-content-background'
                       ? 'bot-area floating'
                       : ''
                   }`}
@@ -226,15 +236,6 @@ export default function TemplatePreview() {
                   Share Overall Feedback 🙂
                 </a>
               ) : null}
-              {/* <div> */}
-              {/* <input
-                  type="file"
-                  accept=".txt"
-                  onClick={handleUploadTextFile}
-                  className="button bug-report-btn"
-                />
-                  Upload text file
-                </div> */}
             </div>
           ) : null}
         </div>
