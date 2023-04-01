@@ -6,6 +6,7 @@ import useFetchDemoData from '../hooks/useFetchDemoData';
 import Modal from '../components/Modal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
+import Webcam from "react-webcam";
 
 export default function Demo() {
   const { botId, template } = useParams();
@@ -52,6 +53,15 @@ export default function Demo() {
       ]);
     }
   }, [activeBot]);
+
+  const webcamRef = React.useRef(null);
+  const WebcamCapture = async () => {
+    const capture = React.useCallback(
+        () => {
+          const imageSrc = webcamRef.current.getScreenshot();},
+        [webcamRef]
+    );
+  };
 
   return (
     <div>
@@ -111,13 +121,29 @@ export default function Demo() {
                   {showBot ? 'X' : '+'}
                 </button>
               ) : null}
+
               {template !== 'chat-only' ? (
-                <div
-                  className={`display-area ${
-                    template === 'chat-content-background' ? 'full-width' : ''
-                  }`}
-                  dangerouslySetInnerHTML={displayAreaMarkup()}
-                />
+                  <div>
+                    <div
+                        className={`display-area ${
+                            template !== 'chat-only' ? 'full-width' : ''
+                        }`}
+                        dangerouslySetInnerHTML={displayAreaMarkup()}
+                    />
+
+                    {template == 'chat-content-webcam' ? (
+                        <div>
+                          <Webcam
+                              audio={false}
+                              height="100%"
+                              ref={webcamRef}
+                              screenshotFormat="image/jpeg"
+                              width="100%"
+                              videoConstraints={{deviceId: activeBot.webcamId}}
+                          />
+                        </div>
+                    ): null}
+                  </div>
               ) : null}
               {activeBot.developmentPlatform === 'custom-server' ? (
                 <div
