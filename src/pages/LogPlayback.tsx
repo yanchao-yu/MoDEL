@@ -58,56 +58,57 @@ const LogPlayback = () => {
             // iterate each element in the JSON Array
             data.forEach(
                 function(d: any){
+                    console.log("d: " + JSON.stringify(d))
+
                     if (d.hasOwnProperty(userinput_key)) {
-                        console.log("find userinput_key: " + userinput_key)
-                        updateChats([...chats, { text: d[userinput_key], speaker: 'user' }]);
-                        console.log(JSON.stringify(chats));
+                        if (d['speaker'] == 'user') {
+                            console.log("[Input] [" + userinput_key + "]: " + d[userinput_key])
+                            updateChats([...chats, {text: d[userinput_key], speaker: 'user'}]);
+                        }
                     }
-                    else if (d.hasOwnProperty(sysoutput_key)) {
-                        console.log("find sysoutput_key: " + sysoutput_key)
-                        updateChats([...chats, { text: d[userinput_key], speaker: 'bot' }]);
-                        console.log(JSON.stringify(chats));
-                    }
-                    else{
 
-                        console.log("cannot find keys")
-                        const input_sub_keys = userinput_key.split('.')
-                        let temp_data = Object.assign({}, d);
-                        console.log("[Input] temp_data: " + JSON.stringify(temp_data))
-                        input_sub_keys.forEach(
-                            function(k: any){
-                                if (temp_data.hasOwnProperty(k)) {
-                                    temp_data = temp_data[k]
-                                    console.log("[Input] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
-                                    const tmp_data_type = xtype(temp_data)
-                                    console.log("[Output] tmp_data_type : " + tmp_data_type)
-                                    if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
-                                        console.log("[Input] text = " + temp_data)
-                                        updateChats([...chats, {text: temp_data, speaker: 'user'}]);
-                                        console.log(JSON.stringify(chats));
-                                    }
-                                }
-                            });
-
-                        const out_sub_keys = sysoutput_key.split('.')
-                        console.log(out_sub_keys)
-                        temp_data = Object.assign({}, d);
-                        console.log("[Output] temp_data: " + JSON.stringify(temp_data))
-                        out_sub_keys.forEach(
-                            function(k: any){
-                                if (temp_data.hasOwnProperty(k)) {
-                                    temp_data = temp_data[k]
-                                    console.log("[Output] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
-                                    const tmp_data_type = xtype(temp_data)
-                                    console.log("[Output] tmp_data_type : " + tmp_data_type)
-                                    if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
-                                        console.log("[Output] text = " + temp_data)
-                                        updateChats([...chats, {text: temp_data, speaker: 'bot'}]);
-                                        console.log(JSON.stringify(chats));
-                                    }
-                                }
-                            });
+                    if (d.hasOwnProperty(sysoutput_key)) {
+                        if (d['speaker'] == 'bot') {
+                            console.log("[Output] [" + sysoutput_key + "]: " + d[sysoutput_key])
+                            updateChats([...chats, {text: d[sysoutput_key], speaker: 'bot'}]);
+                        }
                     }
+
+                    // console.log("cannot find keys")
+                    const input_sub_keys = userinput_key.split('.')
+                    let temp_data = Object.assign({}, d);
+                    // console.log("[Input] temp_data: " + JSON.stringify(temp_data))
+                    input_sub_keys.forEach(
+                        function(k: any){
+                            if (temp_data.hasOwnProperty(k)) {
+                                temp_data = temp_data[k]
+                                // console.log("[Input] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
+                                const tmp_data_type = xtype(temp_data)
+                                // console.log("[Output] tmp_data_type : " + tmp_data_type)
+                                if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
+                                    console.log("[Input] [" + input_sub_keys + "]: " + temp_data)
+                                    updateChats([...chats, {text: temp_data, speaker: 'user'}]);
+                                }
+                            }
+                        });
+
+                    const out_sub_keys = sysoutput_key.split('.')
+                    // console.log(out_sub_keys)
+                    temp_data = Object.assign({}, d);
+                    // console.log("[Output] temp_data: " + JSON.stringify(temp_data))
+                    out_sub_keys.forEach(
+                        function(k: any){
+                            if (temp_data.hasOwnProperty(k)) {
+                                temp_data = temp_data[k]
+                                // console.log("[Output] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
+                                const tmp_data_type = xtype(temp_data)
+                                // console.log("[Output] tmp_data_type : " + tmp_data_type)
+                                if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
+                                    console.log("[Output] [" + out_sub_keys + "]: " + temp_data)
+                                    updateChats([...chats, {text: temp_data, speaker: 'bot'}]);
+                                }
+                            }
+                        });
                 }
             )
         }
