@@ -1,15 +1,11 @@
 import Bot from '../svgs/bot.svg';
-import UserIcon from '../assets/profile.svg'
 import { Uploader } from "uploader";
 import { Link, useParams } from 'react-router-dom';
 import { UploadButton } from "react-uploader";
-import { useState } from 'react';
-import Dropdown from "react-dropdown";
+import {useContext, useEffect, useRef, useState} from 'react';
 import * as React from "react";
-import Select from "react-select";
-import JSONInput from 'react-json-editor-ajrm';
-import locale    from 'react-json-editor-ajrm/locale/en';
-import {sampleInputData, sampleOutputData} from '../hooks/sampleData'
+import {DataContext} from "../app/store";
+import xtype from 'xtypejs'
 
 
 
@@ -25,12 +21,14 @@ const LogPlayback = () => {
     const [output, setOutput] = useState<any>('');
     const [input_keys, setInputKeys] = useState<any>([]);
     const [output_keys, setOutputKeys] = useState<any>([]);
+    const {chats, updateChats }= useContext(DataContext)
 
     const uploader = Uploader({
         apiKey: "free" // Get production API keys from Upload.io
     });
 
     const onCompleteSuccess = (files: any) => {
+
         if (files.length) {
             const filesObject: File[] = [];
             const reader = new FileReader();
@@ -41,11 +39,77 @@ const LogPlayback = () => {
                 filesObject.push(file.originalFile.file);
                 reader.readAsText(file.originalFile.file);
             })
+            updateChats([]);
+
             reader.onload = function (event: any) {
                 const text = event.target.result;
-                setData(JSON.parse(text));
+                sortChatData(JSON.parse(text));
             };
             setFiles(filesObject);
+        }
+    }
+
+    const sortChatData = (data) =>{
+        setData(data);
+        const data_type = xtype(data)
+        console.log("xtype: " + data_type)
+        // Check whether the system receive a JSON Array
+        if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
+            // iterate each element in the JSON Array
+            data.forEach(
+                function(d: any){
+                    if (d.hasOwnProperty(userinput_key)) {
+                        console.log("find userinput_key: " + userinput_key)
+                        updateChats([...chats, { text: d[userinput_key], speaker: 'user' }]);
+                        console.log(JSON.stringify(chats));
+                    }
+                    else if (d.hasOwnProperty(sysoutput_key)) {
+                        console.log("find sysoutput_key: " + sysoutput_key)
+                        updateChats([...chats, { text: d[userinput_key], speaker: 'bot' }]);
+                        console.log(JSON.stringify(chats));
+                    }
+                    else{
+
+                        console.log("cannot find keys")
+                        const input_sub_keys = userinput_key.split('.')
+                        let temp_data = Object.assign({}, d);
+                        console.log("[Input] temp_data: " + JSON.stringify(temp_data))
+                        input_sub_keys.forEach(
+                            function(k: any){
+                                if (temp_data.hasOwnProperty(k)) {
+                                    temp_data = temp_data[k]
+                                    console.log("[Input] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
+                                    const tmp_data_type = xtype(temp_data)
+                                    console.log("[Output] tmp_data_type : " + tmp_data_type)
+                                    if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
+                                        console.log("[Input] text = " + temp_data)
+                                        updateChats([...chats, {text: temp_data, speaker: 'user'}]);
+                                        console.log(JSON.stringify(chats));
+                                    }
+                                }
+                            });
+
+                        const out_sub_keys = sysoutput_key.split('.')
+                        console.log(out_sub_keys)
+                        temp_data = Object.assign({}, d);
+                        console.log("[Output] temp_data: " + JSON.stringify(temp_data))
+                        out_sub_keys.forEach(
+                            function(k: any){
+                                if (temp_data.hasOwnProperty(k)) {
+                                    temp_data = temp_data[k]
+                                    console.log("[Output] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
+                                    const tmp_data_type = xtype(temp_data)
+                                    console.log("[Output] tmp_data_type : " + tmp_data_type)
+                                    if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
+                                        console.log("[Output] text = " + temp_data)
+                                        updateChats([...chats, {text: temp_data, speaker: 'bot'}]);
+                                        console.log(JSON.stringify(chats));
+                                    }
+                                }
+                            });
+                    }
+                }
+            )
         }
     }
 
@@ -57,23 +121,67 @@ const LogPlayback = () => {
         }
     }
 
-    const getKeys = (json_str: any, stype: string) => {
-        let object_keys = Object.keys(json_str)
-        let keys_object = object_keys.length > 0
-            && object_keys.map((item, i) => {
-                return (
-                    <option key={i} value={item}>{item}</option>
-                )
-            }, this);
+    const getKeys = (json: any, stype: string) => {
+        let keys: JSX.Element[] = []
 
-        console.log("keys_object: " + keys_object)
-        if (stype === 'input'){
-            setInputKeys(keys_object)
+        const data_type = xtype(json)
+        // Check whether the system receive a JSON Array
+        if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
+            // iterate each element in the JSON Array
+            json.forEach(
+                function(d: any){
+                    let object_keys = Object.keys(d)
+                    object_keys.forEach(
+                        function(k: any){
+                            keys.push(<option key={k} value={k}>{k}</option>)
+                            // Check whether the value is another JSON Object
+                            const value_type = xtype(json[k])
+                            if ( value_type ===  "single_prop_object" || value_type === 'multi_prop_object'){
+                                let sub_keys = Object.keys(json[k])
+                                let sub_keys_str = sub_keys.length > 0
+                                    && sub_keys.map((sub_key, j) => {
+                                        keys.push(<option key={k+'.'+j} value={k+'.'+sub_key}>{k+'.'+sub_key}</option>)
+                                    });
+                            }
+                        });
+                }
+            )
         }
+        // Check whether the system receive a JSON Object
+        else if ( data_type ===  "single_prop_object" || data_type === 'multi_prop_object'){
+            let object_keys = Object.keys(json)
+            // iterate each key in the JSON object
+            object_keys.forEach(
+                function(key: any){
+                    keys.push(<option key={key} value={key}>{key}</option>)
+                    const value_type = xtype(json[key])
+                    // Check whether the value is another JSON Object
+                    if ( value_type ===  "single_prop_object" || value_type === 'multi_prop_object'){
+                        let sub_keys = Object.keys(json[key])
+                        sub_keys.forEach(
+                            function(sub_key: any){
+                                keys.push(<option key={key+'.'+sub_key} value={key+'.'+sub_key}>{key+'.'+sub_key}</option>)
+                            });
+                    }
+                }
+            );
+        }
+        // Add keys and object into the input config
+        if (stype === 'input'){
+            setInputKeys(keys)
+        }
+        // Add keys and object into the output config
         else if (stype === 'output'){
-            setOutputKeys(keys_object)
+            setOutput(json)
+            setOutputKeys(keys)
         }
     }
+
+    const AutoScrollConversations = () => {
+        const containerRef = useRef();
+        useEffect(() => containerRef.current.scrollIntoView());
+        return <div style={{ width: "85%" }} ref={containerRef} />;
+    };
 
     return (
         <div style={{ width: '80%', margin: "0 auto" }}>
@@ -88,7 +196,7 @@ const LogPlayback = () => {
                     </h3>
                 </div>
                 <div id="chat-window" style={{ height: "60vh" , width:'100%'}}>
-                    {data?.map((item: any, index: number) => (
+                    {chats?.map((item, index) => (
                         <div
                             key={index}
                             style={{
@@ -100,16 +208,13 @@ const LogPlayback = () => {
                             }}
                         >
                             <span style={{ display: 'inline-block', marginRight: 5 }}>
-                                {item.speaker === 'bot' ? (
-                                    <img
-                                        src={'https://cdn-icons-png.flaticon.com/512/4712/4712035.png'}
-                                        width={25}
-                                    />
-                                ) : <img
-                                    src={UserIcon}
-                                    width={25}
-                                />
-                                }</span>
+                              {item.speaker === 'bot' ? (
+                                  <img
+                                      src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'
+                                      width={25}
+                                  />
+                              ) : null}
+                            </span>
                             <span
                                 style={{
                                     background: item.speaker === 'bot' ? 'aliceblue' : '#f2f2f1',
@@ -122,19 +227,18 @@ const LogPlayback = () => {
                                             : '12px 2px 12px 12px',
                                 }}
                             >
-                                {item.text}
+                              {item.text}
                             </span>
                         </div>
                     ))}
+                    <AutoScrollConversations />
                 </div>
-
                 <div>
                     <div>
                         <label>Please provide an server input example (JSON object) </label>
                         <textarea className='logplaybackInput'
                                 id={"user_input_json"}
                                 name="input"
-                               // type={"text"}
                                 style={{height: '20%', width:'100%'}}
                                 onKeyDown={(e) => enterKeyHandler(e, "input")}
                                   onChange={(e: any) => setInput(e.target.value)} />
@@ -174,7 +278,7 @@ const LogPlayback = () => {
                     </div>
                 </div>
 
-                {input && output && sysoutput_key && userinput_key ? (
+                {sysoutput_key && userinput_key ? (
                     <div style={{ display: "flex", justifyContent: "center" }}>
                         <UploadButton uploader={uploader}
                                       onComplete={onCompleteSuccess}>

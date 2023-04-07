@@ -7,6 +7,10 @@ import Modal from '../components/Modal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
 import Webcam from "react-webcam";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import {json_view_styles} from "../style/json_viewer_style"
+import { JSONViewer } from "react-json-editor-viewer";
 
 export default function Demo() {
   const { botId, template } = useParams();
@@ -37,6 +41,12 @@ export default function Demo() {
     setShowBugModal(true);
   };
 
+  const [dialogue_log, setDialogueLog] = useState({});
+
+  const getDialogueLog = (log) => {
+    setDialogueLog(log);
+  }
+
   const [session_id, setSessionId] = useState('');
 
   useEffect(() => {
@@ -61,6 +71,17 @@ export default function Demo() {
           const imageSrc = webcamRef.current.getScreenshot();},
         [webcamRef]
     );
+  };
+
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+        JSON.stringify(dialogue_log)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = botName+"_log_"+ Date.now()+".json";
+
+    link.click();
   };
 
   return (
@@ -154,18 +175,59 @@ export default function Demo() {
                   }
                 >
                   {showBot ? (
-                    <ChatWindow
-                      title={activeBot.botName}
-                      botIcon={activeBot.botIcon}
-                      serverURL={activeBot.serverURL}
-                      session_id={session_id}
-                      userInputObj={activeBot.userInputObj}
-                      userinputKey={activeBot.userinputKey}
-                      sysoutputKey={activeBot.sysoutputKey}
-                      chats={chats}
-                      updateChats={updateChats}
-                      width={template === 'chat-only' ? 730 : 350}
-                    />
+                    <div>
+                      {template.template === 'chat-only' ?
+                          <Tabs>
+                            <TabList>
+                              <Tab>Chat Window</Tab>
+                              <Tab>Json Log</Tab>
+                            </TabList>
+
+                            <TabPanel>
+                              <ChatWindow
+                                  title={activeBot.botName}
+                                  botIcon={activeBot.botIcon}
+                                  serverURL={activeBot.serverURL}
+                                  session_id={session_id}
+                                  userInputObj={activeBot.userInputObj}
+                                  userinputKey={activeBot.userinputKey}
+                                  sysoutputKey={activeBot.sysoutputKey}
+                                  chats={chats}
+                                  enableVoice={activeBot.enableVoice}
+                                  getDialogueLog={getDialogueLog}
+                                  updateChats={updateChats}
+                                  width={template.template === 'chat-only' ? 730 : 350}
+                              />
+                            </TabPanel>
+                            <TabPanel>
+                              <div style={{"border-style": "thick double #32a1ce", "width":730}}>
+                                <JSONViewer
+                                    data={dialogue_log}
+                                    styles={json_view_styles}
+                                />
+                                <div style={{"text-align": "center"}}>
+                                  <button type="button" onClick={exportData}>
+                                    Export Dialogue Log
+                                  </button>
+                                </div>
+                              </div>
+                            </TabPanel>
+                          </Tabs>
+                          :
+                          <ChatWindow
+                              title={activeBot.botName}
+                              botIcon={activeBot.botIcon}
+                              serverURL={activeBot.serverURL}
+                              session_id={session_id}
+                              userInputObj={activeBot.userInputObj}
+                              userinputKey={activeBot.userinputKey}
+                              sysoutputKey={activeBot.sysoutputKey}
+                              chats={chats}
+                              enableVoice={activeBot.enableVoice}
+                              updateChats={updateChats}
+                              width={template.template === 'chat-only' ? 730 : 350}
+                          />}
+                    </div>
                   ) : null}
                 </div>
               ) : (

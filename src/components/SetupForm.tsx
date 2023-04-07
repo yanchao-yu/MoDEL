@@ -182,13 +182,11 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         if (stype === 'input'){
             setInputObj(json)
             setInputKeys(keys)
-            alert("input_keys: " + input_keys)
         }
         // Add keys and object into the output config
         else if (stype === 'output'){
             setOutput(json)
             setOutputKeys(keys)
-            alert("output_keys: " + output_keys)
         }
     }
 

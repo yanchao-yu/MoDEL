@@ -21,6 +21,7 @@ export default function ChatWindow({
   userinputKey,
   sysoutputKey,
   enableVoice,
+  getDialogueLog,
   width = 300,
   height = 400,
 }: ChatWindowInterface) {
@@ -36,6 +37,7 @@ export default function ChatWindow({
     useEffect(() => {
         if (finalTranscript !== '') {
             updateChats([...chats, { text: finalTranscript, speaker: 'user' }]);
+            getDialogueLog(chats);
             // alanaQuery(finalTranscript);
             // Create a fresh transcript to avoid the same transcript being appended multiple times
             resetTranscript();
@@ -129,6 +131,7 @@ export default function ChatWindow({
         shallow[userinputKey] = e.currentTarget.value
         console.log('query_object: ' + JSON.stringify(shallow))
       updateChats([...chats, { text: e.currentTarget.value, speaker: 'user' }]);
+      getDialogueLog(chats);
       postData(serverURL || `${import.meta.env.VITE_SERVER_URL}/v1`, shallow)
         .then(async (data) => {
             const response = getResponse(data);
@@ -152,7 +155,7 @@ export default function ChatWindow({
                   function (k: any) {
                       temp_data = temp_data[k]
                       alert("temp_data: "+ JSON.stringify(temp_data));
-                      const tmp_data_type = xtype(data)
+                      const tmp_data_type = xtype(temp_data)
                       alert("tmp_data_type: "+ tmp_data_type);
                       if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace" || tmp_data_type === "multi_elem_array") {
                           response = temp_data
@@ -169,7 +172,7 @@ export default function ChatWindow({
           keys.forEach(
                   function(k: any){
                       temp_data = temp_data[k]
-                      const tmp_data_type = xtype(data)
+                      const tmp_data_type = xtype(temp_data)
                       if ( tmp_data_type ===  "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace"){
                           response = temp_data
                       }
@@ -184,8 +187,10 @@ export default function ChatWindow({
   useEffect(() => {
     if (botResponse) {
       updateChats([...chats, { text: '...', speaker: 'bot' }]);
+      getDialogueLog(chats);
       setTimeout(() => {
         updateChats([...chats, { text: botResponse, speaker: 'bot' }]);
+        getDialogueLog(chats);
         if (enableVoice) {speak(botResponse)}
       }, 1000);
     }
