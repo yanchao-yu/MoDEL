@@ -6,6 +6,9 @@ import {useContext, useEffect, useRef, useState} from 'react';
 import * as React from "react";
 import {DataContext} from "../app/store";
 import xtype from 'xtypejs'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { Scrollbars } from 'react-custom-scrollbars-2';
+import { JsonViewer, createDataType } from '@textea/json-viewer'
 
 
 
@@ -21,14 +24,14 @@ const LogPlayback = () => {
     const [output, setOutput] = useState<any>('');
     const [input_keys, setInputKeys] = useState<any>([]);
     const [output_keys, setOutputKeys] = useState<any>([]);
-    const {chats, updateChats }= useContext(DataContext)
+    const [chats, updateChats]= useState<any>([]);
+    const [jsons, setFilterJsons]= useState<any>([]);
 
     const uploader = Uploader({
         apiKey: "free" // Get production API keys from Upload.io
     });
 
     const onCompleteSuccess = (files: any) => {
-
         if (files.length) {
             const filesObject: File[] = [];
             const reader = new FileReader();
@@ -40,6 +43,7 @@ const LogPlayback = () => {
                 reader.readAsText(file.originalFile.file);
             })
             updateChats([]);
+            setFilterJsons([]);
 
             reader.onload = function (event: any) {
                 const text = event.target.result;
@@ -49,10 +53,24 @@ const LogPlayback = () => {
         }
     }
 
+    // function extracted(d: any, key: string, role: string) {
+    //     console.log("[" + role + "] [" + key + "]: " + d[key]);
+    //     console.log(Object.keys(jsons).length);
+    //     updateChats((chats: any) => [...chats, {text: d[key], speaker: role}]);
+    //     setFilterJsons((jsons: any) => [...jsons, d]);
+    // }
+
+    function extracted(d: any, key: string, text: string, role: string) {
+        console.log("[" + role + "] [" + key + "]: " + text);
+        console.log(Object.keys(jsons).length);
+        updateChats((chats: any) => [...chats, {text: text, speaker: role}]);
+        setFilterJsons((jsons: any) => [...jsons, d]);
+    }
+
     const sortChatData = (data) =>{
         setData(data);
         const data_type = xtype(data)
-        console.log("xtype: " + data_type)
+        // console.log("xtype: " + data_type)
         // Check whether the system receive a JSON Array
         if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
             // iterate each element in the JSON Array
@@ -60,55 +78,78 @@ const LogPlayback = () => {
                 function(d: any){
                     console.log("d: " + JSON.stringify(d))
 
-                    if (d.hasOwnProperty(userinput_key)) {
-                        if (d['speaker'] == 'user') {
-                            console.log("[Input] [" + userinput_key + "]: " + d[userinput_key])
-                            updateChats([...chats, {text: d[userinput_key], speaker: 'user'}]);
-                        }
-                    }
-
-                    if (d.hasOwnProperty(sysoutput_key)) {
-                        if (d['speaker'] == 'bot') {
-                            console.log("[Output] [" + sysoutput_key + "]: " + d[sysoutput_key])
-                            updateChats([...chats, {text: d[sysoutput_key], speaker: 'bot'}]);
-                        }
-                    }
-
                     // console.log("cannot find keys")
-                    const input_sub_keys = userinput_key.split('.')
-                    let temp_data = Object.assign({}, d);
-                    // console.log("[Input] temp_data: " + JSON.stringify(temp_data))
-                    input_sub_keys.forEach(
-                        function(k: any){
-                            if (temp_data.hasOwnProperty(k)) {
-                                temp_data = temp_data[k]
-                                // console.log("[Input] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
-                                const tmp_data_type = xtype(temp_data)
-                                // console.log("[Output] tmp_data_type : " + tmp_data_type)
-                                if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
-                                    console.log("[Input] [" + input_sub_keys + "]: " + temp_data)
-                                    updateChats([...chats, {text: temp_data, speaker: 'user'}]);
-                                }
-                            }
-                        });
+                    try {
+                        const input_sub_keys = userinput_key.split('.');
+                        let temp_in_data = Object.assign({}, d);
+                        console.log("[Input] temp_in_data: " + JSON.stringify(temp_in_data));
+                        console.log("[Input] input_sub_keys: " + input_sub_keys);
+                        input_sub_keys.forEach(
+                            function (k: any) {
+                                console.log("[Input] k: " + k);
+                                if (temp_in_data.hasOwnProperty(k)) {
+                                    temp_in_data = temp_in_data[k]
+                                    console.log("[Input] temp_in_data(k=" + k + "): " + JSON.stringify(temp_in_data))
+                                    const tmp_data_type = xtype(temp_in_data)
+                                    console.log("[Input] tmp_data_type : " + tmp_data_type)
+                                    // if (tmp_data_type === "single_char_string" || tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
+                                    if (["single_char_string","multi_char_string", 'empty_string', "whitespace"].includes(tmp_data_type)) {
 
-                    const out_sub_keys = sysoutput_key.split('.')
-                    // console.log(out_sub_keys)
-                    temp_data = Object.assign({}, d);
-                    // console.log("[Output] temp_data: " + JSON.stringify(temp_data))
+                                        if (d.hasOwnProperty('speaker')) {
+                                            if (d['speaker'] === 'user') {
+                                                extracted(d, userinput_key, temp_in_data, 'user');
+                                                return;
+                                            }
+                                        }
+                                        else{
+                                            extracted(d, userinput_key, temp_in_data, 'user');
+                                            return;
+                                        }
+                                    }
+                                } else {
+                                    temp_in_data = {};
+                                    throw new Error();
+                                }
+                            });
+                    }
+                    catch (e) {
+                    }
+
+                    try {
+                    const out_sub_keys = sysoutput_key.split('.');
+                    let temp_out_data = Object.assign({}, d);
+                    console.log("[Output] temp_out_data: " + JSON.stringify(temp_out_data));
+                    console.log("[Output] out_sub_keys: " + out_sub_keys);
                     out_sub_keys.forEach(
                         function(k: any){
-                            if (temp_data.hasOwnProperty(k)) {
-                                temp_data = temp_data[k]
-                                // console.log("[Output] temp_data(k="+ k +"): " + JSON.stringify(temp_data))
-                                const tmp_data_type = xtype(temp_data)
-                                // console.log("[Output] tmp_data_type : " + tmp_data_type)
-                                if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
-                                    console.log("[Output] [" + out_sub_keys + "]: " + temp_data)
-                                    updateChats([...chats, {text: temp_data, speaker: 'bot'}]);
+                            console.log("[Input] k: " + k);
+                            if (temp_out_data.hasOwnProperty(k)) {
+                                temp_out_data = temp_out_data[k]
+                                console.log("[Output] temp_out_data(k="+ k +"): " + JSON.stringify(temp_out_data))
+                                const tmp_data_type = xtype(temp_out_data)
+                                console.log("[Output] tmp_data_type : " + tmp_data_type)
+                                // if (tmp_data_type === "single_char_string" || tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace") {
+                                if (["single_char_string","multi_char_string", 'empty_string', "whitespace"].includes(tmp_data_type)) {
+                                    if (d.hasOwnProperty('speaker')) {
+                                        if (d['speaker'] === 'bot') {
+                                            extracted(d, sysoutput_key, temp_out_data,'bot');
+                                            return;
+                                        }
+                                    }
+                                    else{
+                                        extracted(d, sysoutput_key, temp_out_data, 'bot');
+                                        return;
+                                    }
+
                                 }
+                            } else {
+                                temp_out_data = {};
+                                throw new Error();
                             }
                         });
+                    }
+                    catch (e) {
+                    }
                 }
             )
         }
@@ -132,6 +173,7 @@ const LogPlayback = () => {
             json.forEach(
                 function(d: any){
                     let object_keys = Object.keys(d)
+                    keys.push(<option value="" selected disabled hidden>Choose here</option>)
                     object_keys.forEach(
                         function(k: any){
                             keys.push(<option key={k} value={k}>{k}</option>)
@@ -148,10 +190,12 @@ const LogPlayback = () => {
                 }
             )
         }
+
         // Check whether the system receive a JSON Object
         else if ( data_type ===  "single_prop_object" || data_type === 'multi_prop_object'){
             let object_keys = Object.keys(json)
             // iterate each key in the JSON object
+            keys.push(<option value="" selected disabled hidden>Choose here</option>)
             object_keys.forEach(
                 function(key: any){
                     keys.push(<option key={key} value={key}>{key}</option>)
@@ -196,53 +240,76 @@ const LogPlayback = () => {
                         <img src={Bot} width={20} /> {"Log PlayBack"}
                     </h3>
                 </div>
-                <div id="chat-window" style={{ height: "60vh" , width:'100%'}}>
-                    {chats?.map((item, index) => (
-                        <div
-                            key={index}
-                            style={{
-                                borderRadius: 20,
-                                margin: '5px 15px',
-                                textAlign: 'left',
-                                position: 'relative',
-                                alignSelf: item.speaker === 'bot' ? 'start' : 'end',
-                            }}
-                        >
-                            <span style={{ display: 'inline-block', marginRight: 5 }}>
-                              {item.speaker === 'bot' ? (
-                                  <img
-                                      src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'
-                                      width={25}
-                                  />
-                              ) : null}
-                            </span>
-                            <span
-                                style={{
-                                    background: item.speaker === 'bot' ? 'aliceblue' : '#f2f2f1',
-                                    padding: 8,
-                                    display: 'inline-block',
-                                    maxWidth: 220,
-                                    borderRadius:
-                                        item.speaker === 'bot'
-                                            ? '2px 12px 12px 12px'
-                                            : '12px 2px 12px 12px',
-                                }}
-                            >
-                              {item.text}
-                            </span>
+                <Tabs>
+                    <TabList>
+                        <Tab>Conversation</Tab>
+                        <Tab>JSON Response</Tab>
+                    </TabList>
+                    <TabPanel>
+                        <div className="Conversation">
+                            <div id="Conversation" className="tabcontent">
+                                <div id="chat-window" style={{ height: "50vh" , width:'100%'}}>
+                                    {chats?.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            style={{
+                                                borderRadius: 20,
+                                                margin: '5px 15px',
+                                                textAlign: 'left',
+                                                position: 'relative',
+                                                alignSelf: item.speaker === 'bot' ? 'start' : 'end',
+                                            }}
+                                        >
+                                            <span style={{ display: 'inline-block', marginRight: 5 }}>
+                                              {item.speaker === 'bot' ? (
+                                                  <img
+                                                      src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'
+                                                      width={25}
+                                                  />
+                                              ) : null}
+                                            </span>
+                                            <span
+                                                style={{
+                                                    background: item.speaker === 'bot' ? 'aliceblue' : '#f2f2f1',
+                                                    padding: 8,
+                                                    display: 'inline-block',
+                                                    maxWidth: 220,
+                                                    borderRadius:
+                                                        item.speaker === 'bot'
+                                                            ? '2px 12px 12px 12px'
+                                                            : '12px 2px 12px 12px',
+                                                }}
+                                            >
+                                              {item.text}
+                                            </span>
+                                        </div>
+                                    ))}
+                                    <AutoScrollConversations />
+                                </div>
+                            </div>
                         </div>
-                    ))}
-                    <AutoScrollConversations />
-                </div>
+                    </TabPanel>
+                    <TabPanel>
+                        <div className="JSON Response">
+                            <div id="JSON" className="tabcontent">
+                                <JsonViewer  style={{ height: "50vh" , width:'100%'}}
+                                    value={jsons}
+                                    theme={"dark"}
+                                />
+                            </div>
+                        </div>
+                    </TabPanel>
+                </Tabs>
                 <div>
                     <div>
                         <label>Please provide an server input example (JSON object) </label>
                         <textarea className='logplaybackInput'
                                 id={"user_input_json"}
                                 name="input"
-                                style={{height: '20%', width:'100%'}}
+                                style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}
                                 onKeyDown={(e) => enterKeyHandler(e, "input")}
-                                  onChange={(e: any) => setInput(e.target.value)} />
+                                onChange={(e: any) => setInput(e.target.value)}
+                        />
                     </div>
                     <div>
                         <label>Please tell me where I should provide the user input: </label>
@@ -262,9 +329,9 @@ const LogPlayback = () => {
                         <textarea className='logplaybackInput'
                                 id={"sys_output_json"}
                                 name="input"
-                                style={{height: '20%', width:'100%'}}
+                                style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}
                                 onKeyDown={(e) => enterKeyHandler(e, "output")}
-                                  onChange={(e: any) => setOutput(e.target.value)} />
+                                onChange={(e: any) => setOutput(e.target.value)} />
                     </div>
                     <div>
                         <label>Please tell me where I can find the system response: </label>

@@ -5,14 +5,11 @@ import { Link, useParams } from 'react-router-dom';
 import ChatWindow from '../components/ChatWindow';
 import Modal from '../components/Modal';
 import BugReport from '../components/BugReport';
-import WebCamera from "../components/WebCamera";
 import { generateID } from '../utils';
-import Darkmode from 'drkmd-js'
 import Webcam from "react-webcam";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import {json_view_styles} from "../style/json_viewer_style"
-import { JSONViewer } from "react-json-editor-viewer";
+import {JsonViewer} from "@textea/json-viewer";
 
 export default function TemplatePreview() {
   const template = useParams();
@@ -232,9 +229,9 @@ export default function TemplatePreview() {
                         </TabPanel>
                         <TabPanel>
                           <div style={{"border-style": "thick double #32a1ce", "width":730}}>
-                            <JSONViewer
-                              data={dialogue_log}
-                              styles={json_view_styles}
+                            <JsonViewer  style={{ height: "60vh" , width:730}}
+                                         value={dialogue_log}
+                                         theme={"dark"}
                             />
                             <div style={{"text-align": "center"}}>
                               <button type="button" onClick={exportData}>
