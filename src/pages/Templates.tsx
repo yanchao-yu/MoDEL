@@ -4,7 +4,7 @@ import ChatOnly from '../svgs/chat-only.svg';
 import ChatBg from '../svgs/chat-bg.svg';
 import ChatLeft from '../svgs/chat-left.svg';
 import ChatRight from '../svgs/chat-right.svg';
-import Darkmode from 'drkmd-js'
+import Darkmode from 'drkmd-js';
 
 export default function Templates() {
   const match = useRouteMatch();

@@ -6,9 +6,12 @@ import Template from './pages/Template';
 import TemplatePreview from './pages/TemplatePreview';
 import Demo from './pages/Demo';
 import './style.css';
+import DataContextProvider from './app/store'
+import LogPlayback from './pages/LogPlayback';
 
 export default function App() {
   return (
+    <DataContextProvider>
     <Router>
       <Switch>
         <Route path="/demo/:template/:botId">
@@ -23,10 +26,15 @@ export default function App() {
         <Route path="/templates">
           <Templates />
         </Route>
+        <Route path="/logplayback">
+          <LogPlayback />
+        </Route>
         <Route path="/">
           <Home />
         </Route>
       </Switch>
     </Router>
+    </DataContextProvider>
+
   );
 }

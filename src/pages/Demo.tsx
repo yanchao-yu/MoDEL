@@ -6,6 +6,11 @@ import useFetchDemoData from '../hooks/useFetchDemoData';
 import Modal from '../components/Modal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
+import Webcam from "react-webcam";
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
+import {json_view_styles} from "../style/json_viewer_style"
+import { JSONViewer } from "react-json-editor-viewer";
 
 export default function Demo() {
   const { botId, template } = useParams();
@@ -14,7 +19,18 @@ export default function Demo() {
   const [chats, updateChats] = useState<{text: string, speaker: string}[]>([]);
   const [showBot, toggleBot] = useState(true);
   const [showBugModal, setShowBugModal] = useState(false);
-  function displayAreaMarkup() { 
+
+  console.log("activeBot: " + activeBot)
+
+  function descriptionMarkup() {
+    return { __html: activeBot.description };
+  }
+
+  function consentMarkup() {
+    return { __html: activeBot.consentNote };
+  }
+
+  function displayAreaMarkup() {
     return { __html: activeBot.displayContent };
   }
   function botIframe() {
@@ -24,6 +40,12 @@ export default function Demo() {
   const handleBugReport = () => {
     setShowBugModal(true);
   };
+
+  const [dialogue_log, setDialogueLog] = useState({});
+
+  const getDialogueLog = (log) => {
+    setDialogueLog(log);
+  }
 
   const [session_id, setSessionId] = useState('');
 
@@ -41,6 +63,26 @@ export default function Demo() {
       ]);
     }
   }, [activeBot]);
+
+  const webcamRef = React.useRef(null);
+  const WebcamCapture = async () => {
+    const capture = React.useCallback(
+        () => {
+          const imageSrc = webcamRef.current.getScreenshot();},
+        [webcamRef]
+    );
+  };
+
+  const exportData = () => {
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+        JSON.stringify(dialogue_log)
+    )}`;
+    const link = document.createElement("a");
+    link.href = jsonString;
+    link.download = botName+"_log_"+ Date.now()+".json";
+
+    link.click();
+  };
 
   return (
     <div>
@@ -60,7 +102,9 @@ export default function Demo() {
           <div style={{ textAlign: 'center' }}>
             <h2>{activeBot.title}</h2>
             <p style={{ marginTop: 5 }}>
-              <small style={{ fontSize: 14 }}>{activeBot.description}</small>
+              <div
+                  dangerouslySetInnerHTML={descriptionMarkup()}
+              />
             </p>
             <p style={{ marginTop: 10 }}>
               <strong style={{ color: 'red' }}>
@@ -73,7 +117,9 @@ export default function Demo() {
                 type="checkbox"
                 onChange={(e) => setStart(e.target.checked)}
               />{' '}
-              <label htmlFor="consent">{activeBot.consentNote}</label>
+              <div
+                  dangerouslySetInnerHTML={consentMarkup()}
+              />
             </div>
           </div>
           <div className="divider"></div>
@@ -96,13 +142,29 @@ export default function Demo() {
                   {showBot ? 'X' : '+'}
                 </button>
               ) : null}
+
               {template !== 'chat-only' ? (
-                <div
-                  className={`display-area ${
-                    template === 'chat-content-background' ? 'full-width' : ''
-                  }`}
-                  dangerouslySetInnerHTML={displayAreaMarkup()}
-                />
+                  <div>
+                    <div
+                        className={`display-area ${
+                            template !== 'chat-only' ? 'full-width' : ''
+                        }`}
+                        dangerouslySetInnerHTML={displayAreaMarkup()}
+                    />
+
+                    {template == 'chat-content-webcam' ? (
+                        <div>
+                          <Webcam
+                              audio={false}
+                              height="100%"
+                              ref={webcamRef}
+                              screenshotFormat="image/jpeg"
+                              width="100%"
+                              videoConstraints={{deviceId: activeBot.webcamId}}
+                          />
+                        </div>
+                    ): null}
+                  </div>
               ) : null}
               {activeBot.developmentPlatform === 'custom-server' ? (
                 <div
@@ -113,15 +175,59 @@ export default function Demo() {
                   }
                 >
                   {showBot ? (
-                    <ChatWindow
-                      title={activeBot.botName}
-                      botIcon={activeBot.botIcon}
-                      serverURL={activeBot.serverURL}
-                      session_id={session_id}
-                      chats={chats}
-                      updateChats={updateChats}
-                      width={template === 'chat-only' ? 730 : 350}
-                    />
+                    <div>
+                      {template.template === 'chat-only' ?
+                          <Tabs>
+                            <TabList>
+                              <Tab>Chat Window</Tab>
+                              <Tab>Json Log</Tab>
+                            </TabList>
+
+                            <TabPanel>
+                              <ChatWindow
+                                  title={activeBot.botName}
+                                  botIcon={activeBot.botIcon}
+                                  serverURL={activeBot.serverURL}
+                                  session_id={session_id}
+                                  userInputObj={activeBot.userInputObj}
+                                  userinputKey={activeBot.userinputKey}
+                                  sysoutputKey={activeBot.sysoutputKey}
+                                  chats={chats}
+                                  enableVoice={activeBot.enableVoice}
+                                  getDialogueLog={getDialogueLog}
+                                  updateChats={updateChats}
+                                  width={template.template === 'chat-only' ? 730 : 350}
+                              />
+                            </TabPanel>
+                            <TabPanel>
+                              <div style={{"border-style": "thick double #32a1ce", "width":730}}>
+                                <JSONViewer
+                                    data={dialogue_log}
+                                    styles={json_view_styles}
+                                />
+                                <div style={{"text-align": "center"}}>
+                                  <button type="button" onClick={exportData}>
+                                    Export Dialogue Log
+                                  </button>
+                                </div>
+                              </div>
+                            </TabPanel>
+                          </Tabs>
+                          :
+                          <ChatWindow
+                              title={activeBot.botName}
+                              botIcon={activeBot.botIcon}
+                              serverURL={activeBot.serverURL}
+                              session_id={session_id}
+                              userInputObj={activeBot.userInputObj}
+                              userinputKey={activeBot.userinputKey}
+                              sysoutputKey={activeBot.sysoutputKey}
+                              chats={chats}
+                              enableVoice={activeBot.enableVoice}
+                              updateChats={updateChats}
+                              width={template.template === 'chat-only' ? 730 : 350}
+                          />}
+                    </div>
                   ) : null}
                 </div>
               ) : (

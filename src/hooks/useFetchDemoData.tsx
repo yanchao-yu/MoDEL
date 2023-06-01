@@ -8,36 +8,76 @@ export default function useFetchDemoData(botId: string) {
   const [activeBot, setActiveBot] = useState<BotConfig>();
 
   useEffect(() => {
+
+    console.log('botId: ' + botId)
+
     const getBotData = async () => {
-      const data = await fetchData('https://kpfm2b.sse.codesandbox.io/demo');
+      const data = await fetchData(`${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${botId}`);
+      // console.log('data: ' + JSON.stringify(data))
       setBotData(data);
     };
     getBotData();
   }, []);
 
   useEffect(() => {
-    if (botData.length > 0) {
-      for (let data of botData) {
-        if (data[0] === botId) {
-          const obj = {
-            title: data[12],
-            description: data[5],
-            embedCode: data[8],
-            developmentPlatform: data[6],
-            botName: data[3],
-            botIntro: data[2],
-            botIcon: data[1],
-            consentNote: data[4],
-            enableBugReport: data[9],
-            enableFeedback: data[10],
-            feedbackLink: data[11],
-            displayContent: data[7],
-            serverURL: data[13],
-          };
-          setActiveBot(obj);
-          setLoading(false);
-        }
-      }
+
+    console.log('botData: ' + JSON.stringify(botData))
+    console.log('botData length: ' + botData.length)
+
+    if (botData['botId'] === botId) {
+      const obj = {
+        title: botData['title'],
+        description: botData['description'],
+        embedCode: botData['embedCode'],
+        developmentPlatform: botData['developmentPlatform'],
+        botName: botData['botName'],
+        botIntro: botData['botIntro'],
+        botIcon: botData['botIcon'],
+        userinputKey: botData['userinputKey'],
+        sysoutputKey: botData['sysoutputKey'],
+        userInputObj: botData['userInputObj'],
+        consentNote: botData['consentNote'],
+        enableBugReport: botData['enableBugReport'],
+        enableFeedback: botData['enableFeedback'],
+        feedbackLink: botData['feedbackLink'],
+        displayContent: botData['displayContent'],
+        serverURL: botData['serverURL'],
+        webcamId: botData['webcamId'],
+        enableVoice: botData['enableVoice'],
+      };
+      console.log('ActiveBot obj: ' + JSON.stringify(obj))
+      setActiveBot(obj);
+
+      setLoading(false);
+
+
+    // if (botData.length > 0) {
+    //   for (let data of botData) {
+    //     console.log('data: ' + JSON.stringify(data))
+    //     if (data['botId'] === botId) {
+    //       const obj = {
+    //         title: data['title'],
+    //         description: data['description'],
+    //         embedCode: data['embedCode'],
+    //         developmentPlatform: data['developmentPlatform'],
+    //         botName: data['botName'],
+    //         botIntro: data['botIntro'],
+    //         botIcon: data['botIcon'],
+    //         consentNote: data['consentNote'],
+    //         enableBugReport: data['enableBugReport'],
+    //         enableFeedback: data['enableFeedback'],
+    //         feedbackLink: data['feedbackLink'],
+    //         displayContent: data['displayContent'],
+    //         serverURL: data['serverURL'],
+    //         webcamId: data['webcamId'],
+    //         enableVoice: data['enableVoice'],
+    //       };
+    //       console.log('ActiveBot obj: ' + JSON.stringify(obj))
+    //       setActiveBot(obj);
+    //
+    //       setLoading(false);
+    //     }
+    //   }
     }
   }, [botData]);
 

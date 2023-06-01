@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useRef, useEffect, useState, useCallback} from 'react';
+import {useRef, useEffect, useState, useContext} from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { ChatWindowInterface } from '../interfaces';
 import Bot from '../svgs/bot.svg';
@@ -8,6 +8,8 @@ import classNames from "classnames";
 import 'regenerator-runtime/runtime'
 import Speech from "speak-tts";
 import SpeechRecognition, {useSpeechRecognition} from "react-speech-recognition";
+import { DataContext } from '../app/store';
+import xtype from 'xtypejs'
 
 
 export default function ChatWindow({
@@ -15,16 +17,18 @@ export default function ChatWindow({
   botIcon = 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png',
   serverURL,
   session_id,
-  chats,
+  userInputObj,
+  userinputKey,
+  sysoutputKey,
   enableVoice,
-  updateChats,
+  getDialogueLog,
   width = 300,
   height = 400,
 }: ChatWindowInterface) {
 
   const [isListening, setListening] = useState(false);
   const [botResponse, setBotResponse] = useState('');
-
+  const {chats, updateChats }= useContext(DataContext)
   // const appId = '8b12e1fc-7544-46bb-a619-10a9cc77dc2d';
   // const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
   // SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
@@ -33,6 +37,7 @@ export default function ChatWindow({
     useEffect(() => {
         if (finalTranscript !== '') {
             updateChats([...chats, { text: finalTranscript, speaker: 'user' }]);
+            if (getDialogueLog) {getDialogueLog(chats);}
             // alanaQuery(finalTranscript);
             // Create a fresh transcript to avoid the same transcript being appended multiple times
             resetTranscript();
@@ -119,40 +124,81 @@ export default function ChatWindow({
 
   const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.code === 'Enter') {
-      updateChats([...chats, { text: e.currentTarget.value, speaker: 'user' }]);
-      postData(serverURL || 'https://kpfm2b.sse.codesandbox.io', {
-        session_id,
-        user_id: uuidv4(),
-        text: e.currentTarget.value,
-      })
+        let shallow = Object.assign({}, userInputObj);
+        shallow["session_id"] = session_id
+        shallow["user_id"] = uuidv4()
+        shallow["speaker"] = 'user'
+        shallow[userinputKey] = e.currentTarget.value
+        console.log('query_object: ' + JSON.stringify(shallow))
+        updateChats([...chats, { text: e.currentTarget.value, speaker: 'user' }]);
+        if (getDialogueLog) {getDialogueLog(chats);}
+      postData(serverURL || `${import.meta.env.VITE_SERVER_URL}/v1`, shallow)
         .then(async (data) => {
-          if (data) {
-            const {
-              nlu: { response },
-            } = data;
+            const response = getResponse(data);
             setBotResponse(response);
-          }
         })
         .catch((err) => console.log(err));
       e.currentTarget.value = '';
     }
   };
 
+  const getResponse = (data: any) => {
+      const data_type = xtype(data)
+      if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
+          return data.map((item: any, index: number ) => {
+              const keys = sysoutputKey.split('.');
+
+              let temp_data = Object.assign({}, item);
+              let response = "";
+              keys.forEach(
+                  function (k: any) {
+                      temp_data = temp_data[k]
+                      const tmp_data_type = xtype(temp_data)
+                      if (tmp_data_type === "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace" || tmp_data_type === "multi_elem_array") {
+                          response = temp_data
+                      }
+                  });
+              return response;
+          });
+      }
+      else if ( data_type ===  "single_prop_object" || data_type === 'multi_prop_object'){
+          const keys = sysoutputKey.split('.');
+          let temp_data = Object.assign({}, data);
+          let response = "";
+          keys.forEach(
+                  function(k: any){
+                      temp_data = temp_data[k]
+                      const tmp_data_type = xtype(temp_data)
+                      if ( tmp_data_type ===  "multi_char_string" || tmp_data_type === 'empty_string' || tmp_data_type === "whitespace"){
+                          response = temp_data
+                      }
+                  });
+
+          alert(JSON.stringify(response))
+          alert(response)
+          return response;
+      }
+  };
+
   useEffect(() => {
     if (botResponse) {
       updateChats([...chats, { text: '...', speaker: 'bot' }]);
+      if (getDialogueLog) {getDialogueLog(chats);}
       setTimeout(() => {
         updateChats([...chats, { text: botResponse, speaker: 'bot' }]);
+        if (getDialogueLog) {getDialogueLog(chats);}
         if (enableVoice) {speak(botResponse)}
       }, 1000);
     }
   }, [botResponse]);
 
+
+  console.log({chats});
   // START -> Autoscroll Chats Window
   const AutoScrollConversations = () => {
     const containerRef = useRef();
     useEffect(() => containerRef.current.scrollIntoView());
-    return <div style={{ width: 350 }} ref={containerRef} />;
+    return <div style={{ width: "85%" }} ref={containerRef} />;
   };
 
   // Autoscroll Chats Window -> END!
