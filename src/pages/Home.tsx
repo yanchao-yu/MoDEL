@@ -68,7 +68,7 @@ export default function Home() {
       </span>
       <div className="divider" />
       <ChatWindow
-        title="CoronaBot Demo"
+        title="DemoBot"
         session_id={generateID()}
         // chats={chats}
         // updateChats={updateChats}

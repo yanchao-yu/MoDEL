@@ -7,8 +7,8 @@ import Modal from '../components/Modal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
 import Webcam from "react-webcam";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import { Tabs, Tab } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import {JsonViewer} from "@textea/json-viewer";
 
 export default function TemplatePreview() {
@@ -205,13 +205,9 @@ export default function TemplatePreview() {
                 {showBot ? (
                     <div>
                       {template.template === 'chat-only' ?
-                      <Tabs>
-                        <TabList>
-                          <Tab>Chat Window</Tab>
-                          <Tab>Json Log</Tab>
-                        </TabList>
+                      <Tabs justify className="mb-3">
 
-                        <TabPanel>
+                        <Tab eventKey="chat" title="Chat Window">
                           <ChatWindow
                               title={botName}
                               botIcon={botIcon}
@@ -220,14 +216,14 @@ export default function TemplatePreview() {
                               userInputObj={userInputObj}
                               userinputKey={userinputKey}
                               sysoutputKey={sysoutputKey}
-                              chats={chats}
+                              chats={[]}
                               enableVoice={enableVoice}
                               updateChats={updateChats}
                               getDialogueLog={getDialogueLog}
                               width={template.template === 'chat-only' ? 730 : 350}
                           />
-                        </TabPanel>
-                        <TabPanel>
+                        </Tab>
+                        <Tab eventKey="log" title="JSON Log">
                           <div style={{"border-style": "thick double #32a1ce", "width":730}}>
                             <JsonViewer  style={{ height: "60vh" , width:730}}
                                          value={dialogue_log}
@@ -239,7 +235,7 @@ export default function TemplatePreview() {
                               </button>
                             </div>
                           </div>
-                        </TabPanel>
+                        </Tab>
                       </Tabs>
                       :
                       <ChatWindow
@@ -250,7 +246,9 @@ export default function TemplatePreview() {
                         userInputObj={userInputObj}
                         userinputKey={userinputKey}
                         sysoutputKey={sysoutputKey}
-                        chats={chats}
+                        chats={[
+                          { text: botIntro === '' ? 'Hello' : botIntro, speaker: 'bot' },
+                        ]}
                         enableVoice={enableVoice}
                         updateChats={updateChats}
                         width={template.template === 'chat-only' ? 730 : 350}

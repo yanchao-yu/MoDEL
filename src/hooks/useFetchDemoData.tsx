@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchData } from '../utils/';
+import { fetchData } from '../utils';
 import { BotConfig } from '../interfaces';
 
 export default function useFetchDemoData(botId: string) {

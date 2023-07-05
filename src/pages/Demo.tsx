@@ -7,8 +7,8 @@ import Modal from '../components/Modal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
 import Webcam from "react-webcam";
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
+import { Tabs, Tab } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import {json_view_styles} from "../style/json_viewer_style"
 import { JSONViewer } from "react-json-editor-viewer";
 
@@ -177,13 +177,9 @@ export default function Demo() {
                   {showBot ? (
                     <div>
                       {template.template === 'chat-only' ?
-                          <Tabs>
-                            <TabList>
-                              <Tab>Chat Window</Tab>
-                              <Tab>Json Log</Tab>
-                            </TabList>
+                          <Tabs justify className="mb-3">
 
-                            <TabPanel>
+                            <Tab eventKey="chat" title="Chat Window">
                               <ChatWindow
                                   title={activeBot.botName}
                                   botIcon={activeBot.botIcon}
@@ -198,8 +194,8 @@ export default function Demo() {
                                   updateChats={updateChats}
                                   width={template.template === 'chat-only' ? 730 : 350}
                               />
-                            </TabPanel>
-                            <TabPanel>
+                            </Tab>
+                            <Tab eventKey="log" title="JSON Log">
                               <div style={{"border-style": "thick double #32a1ce", "width":730}}>
                                 <JSONViewer
                                     data={dialogue_log}
@@ -211,7 +207,7 @@ export default function Demo() {
                                   </button>
                                 </div>
                               </div>
-                            </TabPanel>
+                            </Tab>
                           </Tabs>
                           :
                           <ChatWindow
