@@ -1,6 +1,19 @@
 version: '3.8'
 services:
-  api:
+  vite-client:
+    build:
+      dockerfile: Dockerfile
+      context: ./vite-client
+    container_name: vite-client
+    stdin_open: true
+    tty: true
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./vite-client:/app
+      - /app/node_modules
+
+  server_backend:
     build:
       dockerfile: Dockerfile
       context: "./server"
@@ -9,17 +22,4 @@ services:
       - '3031:3031'
     volumes:
       - ./server:/app
-      - ./app/node_modules
-
-  client:
-    build:
-      dockerfile: Dockerfile
-      context: ./client
-    container_name: client_frontend
-    stdin_open: true
-    tty: true
-    ports:
-      - '5173:5173'
-    volumes:
-      - ./client:/app
-      - ./app/node_modules
+      - /app/node_modules
