@@ -428,10 +428,10 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     <textarea className='logplaybackInput'
                               id={"user_input_json"}
                               name="input"
-                              placeholder={sampleInputMarkup()}
-                              style={{height: '20%', width:'100%'}}
+                              style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}
                               onKeyDown={(e) => enterKeyHandler(e, "input")}
-                              onChange={(e: any) => setInput(e.target.value)} />
+                              onChange={(e: any) => setInput(e.target.value)}
+                    />
                 </div>
                 <div>
                     <label>Please tell me where I should provide the user input: </label>
@@ -439,7 +439,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                         className="styled-select"
                         name="UserInputKey"
                         id="UserInputKey"
-                        placeholder="text"
                         style={{ width: '40%', margin: "0 auto" }}
                         onChange={(e) => setUserInputKey(e.target.value)}
                     >
@@ -452,8 +451,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     <textarea className='logplaybackInput'
                               id={"sys_output_json"}
                               name="input"
-                              style={{height: '20%', width:'100%'}}
-                              placeholder={sampleOutMarkup()}
+                              style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}
                               onKeyDown={(e) => enterKeyHandler(e, "output")}
                               onChange={(e: any) => setOutput(e.target.value)} />
                 </div>
@@ -462,7 +460,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     <select className="styled-select"
                             name="SysOutputKey"
                             id="SysOutputKey"
-                            placeholder="text"
                             style={{ width: '40%', margin: "0 auto" }}
                             onChange={(e) => setSysOutputKey(e.target.value)}
                     >
@@ -470,24 +467,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     </select>
                 </div>
             </div>
-          {/*<div className="input-div">*/}
-          {/*  <label className="styled-label">"Request" object format</label>*/}
-          {/*  <input*/}
-          {/*    disabled*/}
-          {/*    type="text"*/}
-          {/*    placeholder={`{ "session_id": "001", "user_id": "002", "text": "..."}`}*/}
-          {/*    className="styled-input"*/}
-          {/*  />*/}
-          {/*</div>*/}
-          {/*<div className="input-div">*/}
-          {/*  <label className="styled-label">"Response" object format</label>*/}
-          {/*  <input*/}
-          {/*    disabled*/}
-          {/*    type="text"*/}
-          {/*    placeholder={`{"session_id": "001", "user_id": "002", "nlu": {"text": "...", "response": "...", ...}}`}*/}
-          {/*    className="styled-input"*/}
-          {/*  />*/}
-          {/*</div>*/}
         </div>
       ) : null}
       <div className="divider-no-line"></div>

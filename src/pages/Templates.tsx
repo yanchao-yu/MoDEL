@@ -5,6 +5,7 @@ import ChatBg from '../svgs/chat-bg.svg';
 import ChatLeft from '../svgs/chat-left.svg';
 import ChatRight from '../svgs/chat-right.svg';
 import Darkmode from 'drkmd-js';
+import {Col, Container, Row} from "react-bootstrap";
 
 export default function Templates() {
   const match = useRouteMatch();
@@ -26,48 +27,61 @@ export default function Templates() {
       <h3 className="sub-title">
         Select the template that matches your desired layout
       </h3>
-      <div className="templates">
-        <div className="template">
-          <button type="button" value="chat-only" onClick={handleTemplateSelect}
-                  className="primary round outline">
-            Chat Only
-            <img src={ChatOnly} width="100%" alt="Chat Only Template" />
-          </button>
-        </div>
-        <div className="template">
-          <button type="button" value="chat-content-background" onClick={handleTemplateSelect}
-                  className="primary round outline">
-            Chat with content (background)
-            <img
-                src={ChatBg}
-                width="100%"
-                alt="Chat with content (background) Template"
-            /></button>
-        </div>
-        <div className="template">
-          <button type="button" value="chat-content-left" onClick={handleTemplateSelect}
-                  className="primary round outline">
-            Chat with Content
-            <img
-                src={ChatLeft}
-                width="100%"
-                alt="Chat with content (left) Template"
-            />
-          </button>
-        </div>
-        <div className="template">
-          <button type="button" value="chat-content-webcam" onClick={handleTemplateSelect}
-                  className="primary round outline">
-            Chat with Live WebCam
-            <img
-                src={ChatRight}
-                width="100%"
-                alt="Chat with WebCam Template"
-            />
-          </button>
-        </div>
-      </div>
-      <div className="templates"></div>
+
+      <Container>
+        <Row>
+          <Col sm="auto">
+            <div className="template">
+              <button type="button" value="chat-only" onClick={handleTemplateSelect}
+                      className="primary round outline">
+                Chat Only
+                <img src={ChatOnly} width="100%" alt="Chat Only Template" />
+              </button>
+            </div>
+          </Col>
+          <Col sm="auto">
+            <div className="template">
+              <button type="button" value="chat-content-background" onClick={handleTemplateSelect}
+                      className="primary round outline">
+                Chat with content (background)
+                <img
+                    src={ChatBg}
+                    width="100%"
+                    alt="Chat with content (background) Template"
+                /></button>
+            </div>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col sm="auto">
+            <div className="template">
+              <button type="button" value="chat-content-left" onClick={handleTemplateSelect}
+                      className="primary round outline">
+                Chat with Content
+                <img
+                    src={ChatLeft}
+                    width="100%"
+                    alt="Chat with content (left) Template"
+                />
+              </button>
+            </div>
+          </Col>
+          <Col sm="auto">
+            <div className="template">
+              <button type="button" value="chat-content-webcam" onClick={handleTemplateSelect}
+                      className="primary round outline">
+                Chat with Live WebCam
+                <img
+                    src={ChatRight}
+                    width="100%"
+                    alt="Chat with WebCam Template"
+                />
+              </button>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }

@@ -6,8 +6,8 @@ import {useContext, useEffect, useRef, useState} from 'react';
 import * as React from "react";
 import {DataContext} from "../app/store";
 import xtype from 'xtypejs'
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { Scrollbars } from 'react-custom-scrollbars-2';
+import { Tabs, Tab } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { JsonViewer, createDataType } from '@textea/json-viewer'
 
 
@@ -240,12 +240,9 @@ const LogPlayback = () => {
                         <img src={Bot} width={20} /> {"Log PlayBack"}
                     </h3>
                 </div>
-                <Tabs>
-                    <TabList>
-                        <Tab>Conversation</Tab>
-                        <Tab>JSON Response</Tab>
-                    </TabList>
-                    <TabPanel>
+                <Tabs justify className="mb-3">
+
+                    <Tab eventKey="chat" title="Chat Window">
                         <div className="Conversation">
                             <div id="Conversation" className="tabcontent">
                                 <div id="chat-window" style={{ height: "50vh" , width:'100%'}}>
@@ -288,8 +285,8 @@ const LogPlayback = () => {
                                 </div>
                             </div>
                         </div>
-                    </TabPanel>
-                    <TabPanel>
+                    </Tab>
+                    <Tab eventKey="log" title="JSON Log">
                         <div className="JSON Response">
                             <div id="JSON" className="tabcontent">
                                 <JsonViewer  style={{ height: "50vh" , width:'100%'}}
@@ -298,7 +295,7 @@ const LogPlayback = () => {
                                 />
                             </div>
                         </div>
-                    </TabPanel>
+                    </Tab>
                 </Tabs>
                 <div>
                     <div>
