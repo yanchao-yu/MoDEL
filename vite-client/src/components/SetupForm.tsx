@@ -121,7 +121,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       },[handleDevices]);
     const defaultOption = devices[0];
 
-    const onSelect = (option) => {
+    const onSelect = (option: any) => {
       setSelectDevices(option.value)
       setWebcamId(option.value.deviceId)
     }
@@ -192,17 +192,13 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     // @ts-ignore
     return (
     <div>
-      <div className="input-div">
-        <label className="styled-label" htmlFor="title">
-          Title
-        </label>
-        <input
-          className="styled-input"
-          id="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label>Title</Form.Label>
+            <Form.Control
+                type="text"
+                onChange={(e: any) => setTitle(e.target.value)}
+            />
+        </Form.Group>
       <div className="input-div">
         <label className="styled-label" htmlFor="description">
           Description
@@ -304,10 +300,17 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                                 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                         }}
                     /></div>
+                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Choose Camera Device:</Form.Label>
+                    <Form.Select
+                        value={sysoutput_key}
+                        onChange={(e) => setSysOutputKey(e.target.value)}
+                    >
+                        {devices}
+                    </Form.Select>
+                    <Form.Label> Choose Camera Device</Form.Label>
+                </Form.Group>
 
-                <label className="styled-label" htmlFor="device">
-                    Choose Camera Device
-                </label>
                 <Dropdown options={devices}
                           onChange={onSelect}
                           value={defaultOption}
@@ -328,35 +331,45 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       <div className="divider-no-line"></div>
       <h3>&#8212; Bot Integration</h3>
       <div className="divider"></div>
-      <div className="input-div">
-        <label className="styled-label" htmlFor="developmentPlatform">
-          Development Platform
-        </label>
-        <select
-          className="styled-select"
-          name="developmentPlatform"
-          id="developmentPlatform"
-          value={developmentPlatform}
-          onChange={(e) => setDevelopmentPlatform(e.target.value)}
-        >
-          <option value="">Choose your bot platform...</option>
-          <option value="dialog-flow">Dialogflow</option>
-          <option value="custom-server">Custom Server</option>
-        </select>
-      </div>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Label> Development Platform </Form.Label>
+            <Form.Select
+                value={developmentPlatform}
+                onChange={(e) => setDevelopmentPlatform(e.target.value)}
+            >
+                <option value="">Choose your bot platform...</option>
+                <option value="dialog-flow">Dialogflow</option>
+                <option value="custom-server">Custom Server</option>
+            </Form.Select>
+        </Form.Group>
+      {/*<div className="input-div">*/}
+      {/*  <label className="styled-label" htmlFor="developmentPlatform">*/}
+      {/*    Development Platform*/}
+      {/*  </label>*/}
+      {/*  <select*/}
+      {/*    className="styled-select"*/}
+      {/*    name="developmentPlatform"*/}
+      {/*    id="developmentPlatform"*/}
+      {/*    value={developmentPlatform}*/}
+      {/*    onChange={(e) => setDevelopmentPlatform(e.target.value)}*/}
+      {/*  >*/}
+      {/*    <option value="">Choose your bot platform...</option>*/}
+      {/*    <option value="dialog-flow">Dialogflow</option>*/}
+      {/*    <option value="custom-server">Custom Server</option>*/}
+      {/*  </select>*/}
+      {/*</div>*/}
       {/* Dialogflow configuration */}
       {developmentPlatform && developmentPlatform === 'dialog-flow' ? (
-        <div className="input-div">
-          <label className="styled-label" htmlFor="embed-code">
-            Paste embed code
-          </label>
-          <textarea
-            id="embed-code"
-            className="styled-textarea"
-            placeholder='<iframe width="350" height="430" allow="microphone;" src="https://console.dialogflow.com/api-client/demo/embedded/YOUR_API_KEY"></iframe>
-            '
-            onChange={(e) => setEmbedCode(e.target.value)}
-          />
+      <div>
+          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label> Paste Embed Code </Form.Label>
+              <Form.Control
+                  as="textarea"
+                  rows={2}
+                  placeholder='<iframe width="350" height="430" allow="microphone;" src="https://console.dialogflow.com/api-client/demo/embedded/YOUR_API_KEY"></iframe>'
+                  onChange={(e) => setEmbedCode(e.target.value)}
+              />
+          </Form.Group>
           <small className="hint-color">
             Need help with getting the embed code? Follow the steps{' '}
             <a
@@ -370,57 +383,34 @@ export default function SetupForm({ display_area = true, webcam = true}) {
           </small>
         </div>
       ) : null}
-      {/* Customized Server configuration */}
       {developmentPlatform && developmentPlatform === 'custom-server' ? (
         <div>
-          <div className="input-div">
-            <label className="styled-label" htmlFor="bot-name">
-              Bot Name
-            </label>
-            <input
-              id="bot-name"
-              type="text"
-              placeholder="AstroBot"
-              className="styled-input"
-              onChange={(e) => setBotName(e.currentTarget.value)}
-            />
-          </div>
-          <div className="input-div">
-            <label className="styled-label" htmlFor="bot-intro">
-              Bot Intro
-            </label>
-            <input
-              id="bot-intro"
-              type="text"
-              placeholder="Hello, I am AstroBot. Ask me anything about astronomy"
-              className="styled-input"
-              onChange={(e) => setBotIntro(e.currentTarget.value)}
-            />
-          </div>
-          <div className="input-div">
-            <label className="styled-label" htmlFor="bot-icon">
-              Bot Icon (URL)
-            </label>
-            <input
-              id="bot-icon"
-              type="text"
-              placeholder="https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
-              className="styled-input"
-              onChange={(e) => setBotIcon(e.currentTarget.value)}
-            />
-          </div>
-          <div className="input-div">
-            <label className="styled-label" htmlFor="endpoint-url">
-              Server URL (Endpoint)
-            </label>
-            <input
-              id="endpoint-url"
-              type="text"
-              placeholder="https://kpfm2b.sse.codesandbox.io/"
-              className="styled-input"
-              onChange={(e) => setServerURL(e.currentTarget.value)}
-            />
-          </div>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Label> Bot Name </Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="AstroBot"
+                    onChange={(e: any) => setBotName(e.target.value)}
+                />
+                <Form.Label> Bot Intro </Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="Hello, I am AstroBot. Ask me anything about astronomy"
+                    onChange={(e: any) => setBotIntro(e.target.value)}
+                />
+                <Form.Label>Bot Icon (URL)</Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
+                    onChange={(e: any) => setBotIcon(e.target.value)}
+                />
+                <Form.Label>Server URL (Endpoint)</Form.Label>
+                <Form.Control
+                    type="text"
+                    placeholder="https://kpfm2b.sse.codesandbox.io/"
+                    onChange={(e: any) => setServerURL(e.target.value)}
+                />
+            </Form.Group>
             <div>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                     <Form.Label>Please provide an user input example (JSON object)</Form.Label>

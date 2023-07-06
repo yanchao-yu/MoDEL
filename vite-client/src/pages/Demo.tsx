@@ -11,6 +11,7 @@ import { Tabs, Tab } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {json_view_styles} from "../style/json_viewer_style"
 import { JSONViewer } from "react-json-editor-viewer";
+import {JsonViewer} from "@textea/json-viewer";
 
 export default function Demo() {
   const { botId, template } = useParams();
@@ -129,7 +130,7 @@ export default function Demo() {
               style={{
                 position: 'relative',
                 flexDirection:
-                  template === 'chat-content-right' ? 'row-reverse' : 'row',
+                    template === 'chat-content-right' ? 'row-reverse' : 'row',
               }}
             >
               {template === 'chat-content-background' &&
@@ -174,62 +175,63 @@ export default function Demo() {
                       : 'bot-area'
                   }
                 >
-                  {showBot ? (
-                    <div>
-                      {template.template === 'chat-only' ?
-                          <Tabs justify className="mb-3">
 
-                            <Tab eventKey="chat" title="Chat Window">
-                              <ChatWindow
-                                  title={activeBot.botName}
-                                  botIcon={activeBot.botIcon}
-                                  serverURL={activeBot.serverURL}
-                                  session_id={session_id}
-                                  userInputObj={activeBot.userInputObj}
-                                  userinputKey={activeBot.userinputKey}
-                                  sysoutputKey={activeBot.sysoutputKey}
-                                  chats={chats}
-                                  enableVoice={activeBot.enableVoice}
-                                  getDialogueLog={getDialogueLog}
-                                  updateChats={updateChats}
-                                  width={template.template === 'chat-only' ? 730 : 350}
-                              />
-                            </Tab>
-                            <Tab eventKey="log" title="JSON Log">
-                              <div style={{"borderStyle": "thick double #32a1ce", "width":730}}>
-                                <JSONViewer
-                                    data={dialogue_log}
-                                    styles={json_view_styles}
+                  {showBot ? (
+                      <div>
+                        {template === 'chat-only' ?
+                            <Tabs justify className="mb-3">
+
+                              <Tab eventKey="chat" title="Chat Window">
+                                <ChatWindow
+                                    title={activeBot.botName}
+                                    botIcon={activeBot.botIcon}
+                                    serverURL={activeBot.serverURL}
+                                    session_id={session_id}
+                                    userInputObj={activeBot.userInputObj}
+                                    userinputKey={activeBot.userinputKey}
+                                    sysoutputKey={activeBot.sysoutputKey}
+                                    chats={chats}
+                                    enableVoice={activeBot.enableVoice}t
+                                    updateChats={updateChats}
+                                    getDialogueLog={getDialogueLog}
+                                    width={template === 'chat-only' ? 730 : 350}
                                 />
-                                <div style={{"textAlign": "center"}}>
-                                  <button type="button" onClick={exportData}>
-                                    Export Dialogue Log
-                                  </button>
+                              </Tab>
+                              <Tab eventKey="log" title="JSON Log">
+                                <div style={{"border-style": "thick double #32a1ce", "width":730}}>
+                                  <JsonViewer  style={{ height: "60vh" , width:730}}
+                                               value={dialogue_log}
+                                               theme={"dark"}
+                                  />
+                                  <div style={{"text-align": "center"}}>
+                                    <button type="button" onClick={exportData}>
+                                      Export Dialogue Log
+                                    </button>
+                                  </div>
                                 </div>
-                              </div>
-                            </Tab>
-                          </Tabs>
-                          :
-                          <ChatWindow
-                              title={activeBot.botName}
-                              botIcon={activeBot.botIcon}
-                              serverURL={activeBot.serverURL}
-                              session_id={session_id}
-                              userInputObj={activeBot.userInputObj}
-                              userinputKey={activeBot.userinputKey}
-                              sysoutputKey={activeBot.sysoutputKey}
-                              chats={chats}
-                              enableVoice={activeBot.enableVoice}
-                              updateChats={updateChats}
-                              width={template.template === 'chat-only' ? 730 : 350}
-                          />}
-                    </div>
+                              </Tab>
+                            </Tabs>
+                            :
+                            <ChatWindow
+                                title={activeBot.botName}
+                                botIcon={activeBot.botIcon}
+                                serverURL={activeBot.serverURL}
+                                session_id={session_id}
+                                userInputObj={activeBot.userInputObj}
+                                userinputKey={activeBot.userinputKey}
+                                sysoutputKey={activeBot.sysoutputKey}
+                                chats={chats}
+                                enableVoice={activeBot.enableVoice}
+                                updateChats={updateChats}
+                                width={template === 'chat-only' ? 730 : 350}
+                            />}
+                      </div>
                   ) : null}
                 </div>
               ) : (
                 <div
                   className={`bot-area ${
-                    template === 'chat-only'
+                      template === 'chat-only'
                       ? 'full-iframe'
                       : template === 'chat-content-background'
                       ? 'bot-area floating'
