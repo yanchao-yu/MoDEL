@@ -79,7 +79,7 @@ export default function Demo() {
     )}`;
     const link = document.createElement("a");
     link.href = jsonString;
-    link.download = botName+"_log_"+ Date.now()+".json";
+    link.download = botId+"_log_"+ Date.now()+".json";
 
     link.click();
   };
@@ -196,12 +196,12 @@ export default function Demo() {
                               />
                             </Tab>
                             <Tab eventKey="log" title="JSON Log">
-                              <div style={{"border-style": "thick double #32a1ce", "width":730}}>
+                              <div style={{"borderStyle": "thick double #32a1ce", "width":730}}>
                                 <JSONViewer
                                     data={dialogue_log}
                                     styles={json_view_styles}
                                 />
-                                <div style={{"text-align": "center"}}>
+                                <div style={{"textAlign": "center"}}>
                                   <button type="button" onClick={exportData}>
                                     Export Dialogue Log
                                   </button>

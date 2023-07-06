@@ -6,7 +6,7 @@ import {useContext, useEffect, useRef, useState} from 'react';
 import * as React from "react";
 import {DataContext} from "../app/store";
 import xtype from 'xtypejs'
-import { Tabs, Tab } from "react-bootstrap";
+import {Tabs, Tab, Form, InputGroup, Button} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { JsonViewer, createDataType } from '@textea/json-viewer'
 
@@ -155,12 +155,10 @@ const LogPlayback = () => {
         }
     }
 
-    const enterKeyHandler = (e: any, type: string) => {
-        if (e?.key === 'Enter') {
-            const d = type === 'input' ? input : output
-            const text = JSON.parse(d || "");
-            getKeys(text, type)
-        }
+    const enterKeyHandler = (type: string) => {
+        const d = type === 'input' ? input : output
+        const text = JSON.parse(d || "");
+        getKeys(text, type)
     }
 
     const getKeys = (json: any, stype: string) => {
@@ -297,50 +295,90 @@ const LogPlayback = () => {
                         </div>
                     </Tab>
                 </Tabs>
+                {/*<div>*/}
+                {/*    <div>*/}
+                {/*        <label>Please provide an server input example (JSON object) </label>*/}
+                {/*        <textarea className='logplaybackInput'*/}
+                {/*                id={"user_input_json"}*/}
+                {/*                name="input"*/}
+                {/*                style={{ "width":"100%", "resize":"vertical", "maxHeight":"200px", "minHeight":"100px"}}*/}
+                {/*                onKeyDown={(e) => enterKeyHandler(e, "input")}*/}
+                {/*                onChange={(e: any) => setInput(e.target.value)}*/}
+                {/*        />*/}
+                {/*    </div>*/}
+                {/*    <div>*/}
+                {/*        <label>Please tell me where I should provide the user input: </label>*/}
+                {/*        <select*/}
+                {/*            className="styled-select"*/}
+                {/*            name="UserInputKey"*/}
+                {/*            id="UserInputKey"*/}
+                {/*            style={{ width: '40%', margin: "0 auto" }}*/}
+                {/*            onChange={(e) => setUserInputKey(e.target.value)}*/}
+                {/*        >*/}
+                {/*            {input_keys}*/}
+                {/*        </select>*/}
+
+                {/*    </div>*/}
+                {/*    <div>*/}
+                {/*        <label>Please provide an server output example (JSON object) </label>*/}
+                {/*        <textarea className='logplaybackInput'*/}
+                {/*                id={"sys_output_json"}*/}
+                {/*                name="input"*/}
+                {/*                style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}*/}
+                {/*                onKeyDown={(e) => enterKeyHandler(e, "output")}*/}
+                {/*                onChange={(e: any) => setOutput(e.target.value)} />*/}
+                {/*    </div>*/}
+                {/*    <div>*/}
+                {/*        <label>Please tell me where I can find the system response: </label>*/}
+                {/*        <select className="styled-select"*/}
+                {/*                name="SysOutputKey"*/}
+                {/*                id="SysOutputKey"*/}
+                {/*                style={{ width: '40%', margin: "0 auto" }}*/}
+                {/*                onChange={(e) => setSysOutputKey(e.target.value)}*/}
+                {/*        >*/}
+                {/*            {output_keys}*/}
+                {/*        </select>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
                 <div>
-                    <div>
-                        <label>Please provide an server input example (JSON object) </label>
-                        <textarea className='logplaybackInput'
-                                id={"user_input_json"}
-                                name="input"
-                                style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}
-                                onKeyDown={(e) => enterKeyHandler(e, "input")}
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <InputGroup className="mb-2">
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder="example of user query in JSONObject"
                                 onChange={(e: any) => setInput(e.target.value)}
-                        />
-                    </div>
-                    <div>
-                        <label>Please tell me where I should provide the user input: </label>
-                        <select
-                            className="styled-select"
-                            name="UserInputKey"
-                            id="UserInputKey"
-                            style={{ width: '40%', margin: "0 auto" }}
+                            />
+                            <Button variant="outline-secondary" onClick={() => enterKeyHandler("input")}>Go</Button>
+                        </InputGroup>
+                        <Form.Label>Please tell me where I should provide the user input:</Form.Label>
+                        <Form.Select
+                            value={userinput_key}
                             onChange={(e) => setUserInputKey(e.target.value)}
                         >
                             {input_keys}
-                        </select>
+                        </Form.Select>
+                    </Form.Group>
 
-                    </div>
-                    <div>
-                        <label>Please provide an server output example (JSON object) </label>
-                        <textarea className='logplaybackInput'
-                                id={"sys_output_json"}
-                                name="input"
-                                style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}
-                                onKeyDown={(e) => enterKeyHandler(e, "output")}
-                                onChange={(e: any) => setOutput(e.target.value)} />
-                    </div>
-                    <div>
-                        <label>Please tell me where I can find the system response: </label>
-                        <select className="styled-select"
-                                name="SysOutputKey"
-                                id="SysOutputKey"
-                                style={{ width: '40%', margin: "0 auto" }}
-                                onChange={(e) => setSysOutputKey(e.target.value)}
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                        <Form.Label>Please provide an server output example (JSON object)</Form.Label>
+                        <InputGroup className="mb-2">
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder="example of system response in JSONObject"
+                                onChange={(e: any) => setOutput(e.target.value)}
+                            />
+                            <Button variant="outline-secondary" onClick={() => enterKeyHandler("output")}>Go</Button>
+                        </InputGroup>
+                        <Form.Label>Please tell me where I can find the system response:</Form.Label>
+                        <Form.Select
+                            value={sysoutput_key}
+                            onChange={(e) => setSysOutputKey(e.target.value)}
                         >
                             {output_keys}
-                        </select>
-                    </div>
+                        </Form.Select>
+                    </Form.Group>
                 </div>
 
                 {sysoutput_key && userinput_key ? (

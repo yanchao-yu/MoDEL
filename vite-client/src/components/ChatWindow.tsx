@@ -12,7 +12,7 @@ import { DataContext } from '../app/store';
 import xtype from 'xtypejs'
 import useSpeechToText from 'react-hook-speech-to-text';
 import { conversations } from '../chats';
-import { Button } from "react-bootstrap";
+import { Button, Form, Input, InputGroup } from "react-bootstrap";
 
 export default function ChatWindow({
                                        title,
@@ -47,6 +47,7 @@ export default function ChatWindow({
     const [numUtt, setNumUtt] = useState(0);
     if (error) return <p>Web Speech API is not available in this browser 🤷‍</p>;
 
+    const [userQuery, setUserQuery] = useState('');
     const [botResponse, setBotResponse] = useState('');
     const {chats, updateChats }= useContext(DataContext)
 
@@ -145,12 +146,9 @@ export default function ChatWindow({
             .catch((err) => console.log(err));
     }
 
-    const handleKeyPress = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.code === 'Enter') {
-            const user_input = e.currentTarget.value
-            query(user_input);
-            e.currentTarget.value = '';
-        }
+    const handleKeyPress = async (text: string) => {
+        query(text);
+        // setUserQuery('');
     };
 
     const getResponse = (data: any) => {
@@ -265,16 +263,49 @@ export default function ChatWindow({
                 <AutoScrollConversations />
             </div>
 
-           <div className="gap-3" style={{'display': 'flex', 'flex-direction': 'row', 'align-items': 'center', 'align-self': 'stretch'}}>
-                <input
-                    className="chat-box"
-                    placeholder="Type your message"
-                    style={{'background-color':'transparent'}}
-                    onKeyPress={handleKeyPress}
-                />
+           <div className="gap-3" style={{'display': 'flex', 'flexDirection': 'row', 'alignItems': 'center', 'alignSelf': 'stretch'}}>
+
+               {/*<div className="m-3">*/}
+               {/*    <Form>*/}
+               {/*        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">*/}
+               {/*            <Form.Label>Example textarea</Form.Label>*/}
+               {/*            <Form.Control*/}
+               {/*                as="textarea"*/}
+               {/*                rows={3}*/}
+               {/*                value={userQuery}*/}
+               {/*                onChange={onChange}*/}
+               {/*            />*/}
+               {/*        </Form.Group>*/}
+               {/*    </Form>*/}
+
+               {/*    <Button*/}
+               {/*        variant="outline-primary"*/}
+               {/*        size="lg"*/}
+               {/*        active*/}
+               {/*        onClick={() => handleKeyPress(userQuery)}*/}
+               {/*    >*/}
+               {/*        Wave at Me*/}
+               {/*    </Button>*/}
+               {/*</div>*/}
+
+                {/*<input*/}
+                {/*    className="chat-box"*/}
+                {/*    placeholder="Type your message"*/}
+                {/*    style={{'backgroundColor':'transparent'}}*/}
+                {/*    onKeyPress={handleKeyPress}*/}
+                {/*/>*/}
+               <InputGroup className="mb-2">
+                   <Form.Control
+                       as="textarea"
+                       rows={1}
+                       placeholder="Type your message"
+                       onChange={(e: any) => setUserQuery(e.target.value)}
+                   />
+                   <Button variant="outline-secondary" onClick={() => handleKeyPress(userQuery)}>Send</Button>
+               </InputGroup>
                 {enableVoice ? (
                     <div className="ms-3">
-                        <Button  onClick={isRecording ? stopSpeechToText : startSpeechToText} variant="outline-secondary" style={{ 'padding-top': 0, 'padding-bottom': 0, 'padding-left': 0, 'padding-right': 0 , 'background-color':'transparent'}}>
+                        <Button  onClick={isRecording ? stopSpeechToText : startSpeechToText} variant="outline-secondary" style={{ 'paddingTop': 0, 'paddingBottom': 0, 'paddingLeft': 0, 'paddingRight': 0 , 'backgroundColor':'transparent'}}>
                             {isRecording ? <img src={stop_speech} style={{height:40, width:40, alignItems: 'center', justifyContent: 'center'}} />
                                 : <img src={start_speech} style={{height:40, width:40, alignItems: 'center', justifyContent: 'center'}} />}
                         </Button>

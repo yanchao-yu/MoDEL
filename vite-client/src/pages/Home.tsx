@@ -5,8 +5,7 @@ import ChatWindow from '../components/ChatWindow';
 import { generateID } from '../utils';
 import Darkmode from 'drkmd-js';
 import { Uploader } from "uploader"; // Installed by "react-uploader".
-import { UploadButton } from "react-uploader";
-import { ChangeEvent, useState } from 'react';
+import { useState } from 'react';
 import { DataContext } from '../app/store'
 
 
