@@ -423,11 +423,12 @@ export default function SetupForm({ display_area = true, webcam = true}) {
           </div>
             <div>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Label>Please provide an user input example (JSON object)</Form.Label>
                     <InputGroup className="mb-2">
                         <Form.Control
                             as="textarea"
                             rows={3}
-                            placeholder="example of user query in JSONObject"
+                            placeholder="Type an example of user query in JSONObject and press 'Go'"
                             onChange={(e: any) => setInput(e.target.value)}
                         />
                         <Button variant="outline-secondary" onClick={() => enterKeyHandler("input")}>Go</Button>
@@ -447,7 +448,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                         <Form.Control
                             as="textarea"
                             rows={3}
-                            placeholder="example of system response in JSONObject"
+                            placeholder="Type an example of system response in JSONObject and press 'Go'"
                             onChange={(e: any) => setOutput(e.target.value)}
                         />
                         <Button variant="outline-secondary" onClick={() => enterKeyHandler("output")}>Go</Button>

@@ -30,7 +30,6 @@ export default function ChatWindow({
 
     const {
         error,
-        interimResult,
         isRecording,
         results,
         startSpeechToText,
@@ -147,8 +146,13 @@ export default function ChatWindow({
     }
 
     const handleKeyPress = async (text: string) => {
-        query(text);
-        // setUserQuery('');
+        if (text=="/start"){
+            clearContext()
+        }
+        else{
+            query(text);
+            setUserQuery('')
+        }
     };
 
     const getResponse = (data: any) => {
@@ -264,41 +268,12 @@ export default function ChatWindow({
             </div>
 
            <div className="gap-3" style={{'display': 'flex', 'flexDirection': 'row', 'alignItems': 'center', 'alignSelf': 'stretch'}}>
-
-               {/*<div className="m-3">*/}
-               {/*    <Form>*/}
-               {/*        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">*/}
-               {/*            <Form.Label>Example textarea</Form.Label>*/}
-               {/*            <Form.Control*/}
-               {/*                as="textarea"*/}
-               {/*                rows={3}*/}
-               {/*                value={userQuery}*/}
-               {/*                onChange={onChange}*/}
-               {/*            />*/}
-               {/*        </Form.Group>*/}
-               {/*    </Form>*/}
-
-               {/*    <Button*/}
-               {/*        variant="outline-primary"*/}
-               {/*        size="lg"*/}
-               {/*        active*/}
-               {/*        onClick={() => handleKeyPress(userQuery)}*/}
-               {/*    >*/}
-               {/*        Wave at Me*/}
-               {/*    </Button>*/}
-               {/*</div>*/}
-
-                {/*<input*/}
-                {/*    className="chat-box"*/}
-                {/*    placeholder="Type your message"*/}
-                {/*    style={{'backgroundColor':'transparent'}}*/}
-                {/*    onKeyPress={handleKeyPress}*/}
-                {/*/>*/}
                <InputGroup className="mb-2">
                    <Form.Control
                        as="textarea"
                        rows={1}
                        placeholder="Type your message"
+                       value={userQuery}
                        onChange={(e: any) => setUserQuery(e.target.value)}
                    />
                    <Button variant="outline-secondary" onClick={() => handleKeyPress(userQuery)}>Send</Button>

@@ -1,18 +1,14 @@
 import Bot from '../svgs/bot.svg';
 import { Uploader } from "uploader";
-import { Link, useParams } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { UploadButton } from "react-uploader";
-import {useContext, useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import * as React from "react";
-import {DataContext} from "../app/store";
-import xtype from 'xtypejs'
+import xtype from "xtypejs"
 import {Tabs, Tab, Form, InputGroup, Button} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { JsonViewer, createDataType } from '@textea/json-viewer'
+import { JsonViewer } from '@textea/json-viewer'
 
-
-
-const botIcon = 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png';
 
 const LogPlayback = () => {
 
