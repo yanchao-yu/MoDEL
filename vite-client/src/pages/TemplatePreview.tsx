@@ -224,12 +224,12 @@ export default function TemplatePreview() {
                           />
                         </Tab>
                         <Tab eventKey="log" title="JSON Log">
-                          <div style={{"border-style": "thick double #32a1ce", "width":730}}>
+                          <div style={{"borderStyle": "thick double #32a1ce", "width":730}}>
                             <JsonViewer  style={{ height: "60vh" , width:730}}
                                          value={dialogue_log}
                                          theme={"dark"}
                             />
-                            <div style={{"text-align": "center"}}>
+                            <div style={{"textAlign": "center"}}>
                               <button type="button" onClick={exportData}>
                                 Export Dialogue Log
                               </button>
