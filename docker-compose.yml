@@ -8,7 +8,7 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - '443:443'
+      - '80:80'
     volumes:
       - ./vite-client:/app
       - /app/node_modules
@@ -19,7 +19,7 @@ services:
       context: ./server
     container_name: server_backend
     ports:
-      - '3031:3031'
+      - '443:443'
     volumes:
       - ./server:/app
       - /app/node_modules

@@ -117,7 +117,26 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     }, [setDevices]);
 
     React.useEffect(() => {
-      navigator.mediaDevices.enumerateDevices().then(handleDevices);
+        if (!navigator.mediaDevices?.enumerateDevices) {
+            console.log("enumerateDevices() not supported.");
+        } else {
+            // List cameras and microphones.
+            navigator.mediaDevices
+                .enumerateDevices()
+                .then((handleDevices) => {
+                    handleDevices.forEach((device) => {
+                        console.log(`${device.kind}: ${device.label} id = ${device.deviceId}`);
+                    });
+                })
+                .catch((err) => {
+                    console.error(`${err.name}: ${err.message}`);
+                });
+        }
+        //
+        //
+        //
+        //
+        // navigator.mediaDevices.enumerateDevices().then(handleDevices);
       },[handleDevices]);
     const defaultOption = devices[0];
 
