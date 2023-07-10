@@ -1,0 +1,14 @@
+[
+  {"text":"Hello, how may I help you today?","speaker":"bot"},
+  {"message":"hello","speaker":"user"},
+  {"text":["Hello! I am restaurant search assistant! How can I help?"],"speaker":"bot"},
+  {"message":"Can I book a table?","speaker":"user"},
+  {"text":["What cuisine?"],"speaker":"bot"},
+  {"message":"Chinese please","speaker":"user"},
+  {"text":["How many people?"],"speaker":"bot"},
+  {"message":"5 people please","speaker":"user"},
+  {"text":["Do you want to continue?"],"speaker":"bot"},
+  {"message":"yes","speaker":"user"},
+  {"text":["How many people?"],"speaker":"bot"},
+  {"message":"5 please","speaker":"user"}
+]

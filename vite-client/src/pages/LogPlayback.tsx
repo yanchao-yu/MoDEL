@@ -57,8 +57,8 @@ const LogPlayback = () => {
     // }
 
     function extracted(d: any, key: string, text: string, role: string) {
-        console.log("[" + role + "] [" + key + "]: " + text);
-        console.log(Object.keys(jsons).length);
+        console.log("[extracted] [" + role + "] [" + key + "]: " + text);
+        console.log("[extracted]" + Object.keys(jsons).length);
         updateChats((chats: any) => [...chats, {text: text, speaker: role}]);
         setFilterJsons((jsons: any) => [...jsons, d]);
     }
@@ -93,16 +93,33 @@ const LogPlayback = () => {
 
                                         if (d.hasOwnProperty('speaker')) {
                                             if (d['speaker'] === 'user') {
+                                                console.log("[extracted] from : user 1");
                                                 extracted(d, userinput_key, temp_in_data, 'user');
                                                 return;
                                             }
                                         }
                                         else{
+                                            console.log("[extracted] from : user 2");
                                             extracted(d, userinput_key, temp_in_data, 'user');
                                             return;
                                         }
                                     }
+                                    else if (["single_elem_array"].includes(tmp_data_type)){
+                                        if (d.hasOwnProperty('speaker')) {
+                                            if (d['speaker'] === 'user') {
+                                                console.log("[extracted] from : user 3");
+                                                extracted(d, userinput_key, temp_in_data[0], 'user');
+                                                return;
+                                            }
+                                        }
+                                        else{
+                                            console.log("[extracted] from : user 4");
+                                            extracted(d, userinput_key, temp_in_data[0], 'user');
+                                            return;
+                                        }
+                                    }
                                 } else {
+                                    console.log("[extracted] ERROR: "+ temp_in_data);
                                     temp_in_data = {};
                                     throw new Error();
                                 }
@@ -128,17 +145,34 @@ const LogPlayback = () => {
                                 if (["single_char_string","multi_char_string", 'empty_string', "whitespace"].includes(tmp_data_type)) {
                                     if (d.hasOwnProperty('speaker')) {
                                         if (d['speaker'] === 'bot') {
+                                            console.log("[extracted] from : bot 1");
                                             extracted(d, sysoutput_key, temp_out_data,'bot');
                                             return;
                                         }
                                     }
                                     else{
+                                        console.log("[extracted] from : bot 2");
                                         extracted(d, sysoutput_key, temp_out_data, 'bot');
                                         return;
                                     }
 
                                 }
+                                else if (["single_elem_array"].includes(tmp_data_type)){
+                                    if (d.hasOwnProperty('speaker')) {
+                                        if (d['speaker'] === 'bot') {
+                                            console.log("[extracted] from : bot 3");
+                                            extracted(d, userinput_key, temp_out_data[0], 'bot');
+                                            return;
+                                        }
+                                    }
+                                    else{
+                                        console.log("[extracted] from : bot 4");
+                                        extracted(d, userinput_key, temp_out_data[0], 'bot');
+                                        return;
+                                    }
+                                }
                             } else {
+                                console.log("[extracted] ERROR: "+ temp_out_data);
                                 temp_out_data = {};
                                 throw new Error();
                             }
@@ -291,51 +325,6 @@ const LogPlayback = () => {
                         </div>
                     </Tab>
                 </Tabs>
-                {/*<div>*/}
-                {/*    <div>*/}
-                {/*        <label>Please provide an server input example (JSON object) </label>*/}
-                {/*        <textarea className='logplaybackInput'*/}
-                {/*                id={"user_input_json"}*/}
-                {/*                name="input"*/}
-                {/*                style={{ "width":"100%", "resize":"vertical", "maxHeight":"200px", "minHeight":"100px"}}*/}
-                {/*                onKeyDown={(e) => enterKeyHandler(e, "input")}*/}
-                {/*                onChange={(e: any) => setInput(e.target.value)}*/}
-                {/*        />*/}
-                {/*    </div>*/}
-                {/*    <div>*/}
-                {/*        <label>Please tell me where I should provide the user input: </label>*/}
-                {/*        <select*/}
-                {/*            className="styled-select"*/}
-                {/*            name="UserInputKey"*/}
-                {/*            id="UserInputKey"*/}
-                {/*            style={{ width: '40%', margin: "0 auto" }}*/}
-                {/*            onChange={(e) => setUserInputKey(e.target.value)}*/}
-                {/*        >*/}
-                {/*            {input_keys}*/}
-                {/*        </select>*/}
-
-                {/*    </div>*/}
-                {/*    <div>*/}
-                {/*        <label>Please provide an server output example (JSON object) </label>*/}
-                {/*        <textarea className='logplaybackInput'*/}
-                {/*                id={"sys_output_json"}*/}
-                {/*                name="input"*/}
-                {/*                style={{ "width":"100%", "resize":"vertical", "max-height":"200px", "min-height":"100px"}}*/}
-                {/*                onKeyDown={(e) => enterKeyHandler(e, "output")}*/}
-                {/*                onChange={(e: any) => setOutput(e.target.value)} />*/}
-                {/*    </div>*/}
-                {/*    <div>*/}
-                {/*        <label>Please tell me where I can find the system response: </label>*/}
-                {/*        <select className="styled-select"*/}
-                {/*                name="SysOutputKey"*/}
-                {/*                id="SysOutputKey"*/}
-                {/*                style={{ width: '40%', margin: "0 auto" }}*/}
-                {/*                onChange={(e) => setSysOutputKey(e.target.value)}*/}
-                {/*        >*/}
-                {/*            {output_keys}*/}
-                {/*        </select>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
                 <div>
                     <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                         <InputGroup className="mb-2">
