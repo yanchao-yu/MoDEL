@@ -14,6 +14,7 @@ import useSpeechToText from 'react-hook-speech-to-text';
 import { conversations } from '../chats';
 import { Button, Form, Input, InputGroup } from "react-bootstrap";
 
+
 export default function ChatWindow({
                                        title,
                                        botIcon = 'https://cdn-icons-png.flaticon.com/512/4712/4712035.png',
@@ -43,6 +44,8 @@ export default function ChatWindow({
         googleApiKey: "AIzaSyAtHeCifoPmvbYtQAAJ1D4bZn_DQIq3mRE",
         useLegacyResults: false
     });
+
+
     const [numUtt, setNumUtt] = useState(0);
     if (error) return <p>Web Speech API is not available in this browser 🤷‍</p>;
 

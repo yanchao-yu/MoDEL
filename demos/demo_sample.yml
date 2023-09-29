@@ -1,5 +1,16 @@
 title: MoDEsT Demo
 description: MoDEsT has been designed to support academic and industrial evaluations and demonstrations of the conversational agent. Participants at the conference will be able to view the presentation live via a computer interface on various devices. We will provide multiple devices where users can configure the conversation platform and share the example link with colleagues. We will also offer a basic conversation tools guide to help you build up the dialogue exercise or showcase. The demo is speech- and text-based; virtual and in-person participants can view the entry.
-url: http://localhost:5005/webhooks/rest/webhook
+url: http://18.135.26.232:5005/webhooks/rest/webhook
 input_json: {"sender": "tester", "message": "hi pal!"}
 output_json: [{"recipient_id": "tester", "text": "Hello! I am a restaurant search assistant! How can I help?"},{"image": "http://example.com/image.jpg"}]
+
+
+DialogFlow:
+'
+  <iframe
+  allow="microphone;"
+  width="350"
+  height="430"
+  src="https://console.dialogflow.com/api-client/demo/embedded/655702a5-9525-432e-a88f-72f3513dbc3a">
+  </iframe>
+'

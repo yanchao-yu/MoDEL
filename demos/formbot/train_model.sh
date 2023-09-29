@@ -12,7 +12,7 @@ echo $PROJECTROOTPATH
 #pyenv install 3.7.9
 pyenv local 3.7.9
 
-#python -m venv .venv
+python -m venv .venv
 
 #make install-full
 
