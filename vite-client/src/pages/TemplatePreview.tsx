@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react';
 import useClipboard from 'react-use-clipboard';
 import { Link, useParams } from 'react-router-dom';
 import ChatWindow from '../components/ChatWindow';
-import Modal from '../components/Modal';
+import CModal from '../components/CModal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
 import Webcam from "react-webcam";
-import { Tabs, Tab } from "react-bootstrap";
+import {Tabs, Tab, Button, Form} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {JsonViewer} from "@textea/json-viewer";
+import { JsonViewer } from '@textea/json-viewer';
 
 export default function TemplatePreview() {
   const template = useParams();
@@ -74,8 +74,10 @@ export default function TemplatePreview() {
     setDialogueLog(log);
   }
 
-  const handleBugReport = () => {
+  const handleBugReport = async () => {
     setShowBugModal(true);
+    console.log('showBugModal: '+ showBugModal)
+    window.scrollTo(0, 0);
   };
 
 
@@ -106,18 +108,10 @@ export default function TemplatePreview() {
   };
 
   return (
-    <React.Fragment>
-      {showBugModal ? (
-        <Modal
-          close={() => setShowBugModal(false)}
-          title="🐛 Bug Report"
-          description="Please use this form to report individual bugs you find e.g. strange, unexpected responses, error messages etc. Please submit a separate form for each bug you find"
-        >
-          <BugReport session_id={session_id} />
-        </Modal>
-      ) : null}
+    <div>
+
       <div className="container">
-        <Link className="nav-link" to={`/templates/${template.template}/setup`}>
+        <Link className="nav-link" to={`/template.templates/${template.template}/setup`}>
           &#8592; Back to setup
         </Link>
         <h1 className="title">3. Ready!</h1>
@@ -225,10 +219,14 @@ export default function TemplatePreview() {
                         </Tab>
                         <Tab eventKey="log" title="JSON Log">
                           <div style={{"borderStyle": "thick double #32a1ce", "width":730}}>
+
                             <JsonViewer  style={{ height: "60vh" , width:730}}
                                          value={dialogue_log}
                                          theme={"dark"}
                             />
+
+                            <div className="divider"></div>
+
                             <div style={{"textAlign": "center"}}>
                               <button type="button" onClick={exportData}>
                                 Export Dialogue Log
@@ -273,26 +271,26 @@ export default function TemplatePreview() {
             <p className="text-center">"Read and agree the consent first"</p>
           )}
           {start ? (
-            <div style={{ textAlign: 'center', marginTop: 20 }}>
-              {enableBugReport ? (
-                <button
-                  onClick={handleBugReport}
-                  className="button bug-report-btn"
-                >
-                  🐛 Bug Report
-                </button>
-              ) : null}
-              {enableFeedback ? (
-                <a
-                  href={feedbackLink}
-                  target="_blank"
-                  className="button feedback-btn"
-                  style={{ marginLeft: 10 }}
-                >
-                  Share Overall Feedback 🙂
-                </a>
-              ) : null}
-            </div>
+              <div style={{ textAlign: 'center', marginTop: 20 }}>
+                {enableBugReport ? (
+                    <Button variant="primary"
+                        onClick={handleBugReport}
+                    >
+                      🐛 Bug Report
+                    </Button>
+                ) : null}
+
+                {enableFeedback ? (
+                    <Button
+                        href={feedbackLink}
+                        target="_blank"
+                        className="btn btn-success"
+                        style={{ marginLeft: 10 }}
+                    >
+                      Share Overall Feedback 🙂
+                    </Button>
+                ) : null}
+              </div>
           ) : null}
         </div>
         {start ? (
@@ -308,6 +306,17 @@ export default function TemplatePreview() {
           </div>
         ) : null}
       </div>
-    </React.Fragment>
+      {showBugModal ? (
+          <CModal
+              close={() => setShowBugModal(false)}
+              title="🐛 Bug Report"
+              description="Please use this form to report individual bugs you find e.g. strange, unexpected responses,
+              error messages etc. Please submit a separate form for each bug you find"
+              showBugModal={showBugModal}
+          >
+            <BugReport session_id={session_id} />
+          </CModal>
+      ) : null}
+    </div>
   );
 }

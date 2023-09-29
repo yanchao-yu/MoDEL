@@ -3,15 +3,13 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import ChatWindow from '../components/ChatWindow';
 import useFetchDemoData from '../hooks/useFetchDemoData';
-import Modal from '../components/Modal';
+import Modal from '../components/CModal';
 import BugReport from '../components/BugReport';
 import { generateID } from '../utils';
 import Webcam from "react-webcam";
 import { Tabs, Tab } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {json_view_styles} from "../style/json_viewer_style"
-import { JSONViewer } from "react-json-editor-viewer";
-import {JsonViewer} from "@textea/json-viewer";
+import { JsonViewer } from '@textea/json-viewer';
 
 export default function Demo() {
   const { botId, template } = useParams();
@@ -203,6 +201,9 @@ export default function Demo() {
                                                value={dialogue_log}
                                                theme={"dark"}
                                   />
+
+                                  <div className="divider"></div>
+
                                   <div style={{"text-align": "center"}}>
                                     <button type="button" onClick={exportData}>
                                       Export Dialogue Log
