@@ -7,12 +7,12 @@ import stop_speech from '../svgs/microphone-muted-button-red-icon.png';
 import start_speech from '../svgs/microphone-button-green-icon.png';
 import { postData } from '../utils';
 import 'regenerator-runtime/runtime'
-import Speech from "speak-tts";
 import { DataContext } from '../app/store';
 import xtype from 'xtypejs'
 import useSpeechToText from 'react-hook-speech-to-text';
 import { conversations } from '../chats';
-import { Button, Form, Input, InputGroup } from "react-bootstrap";
+import { Button, Form, InputGroup } from "react-bootstrap";
+import { useSpeechSynthesis } from "react-speech-kit";
 
 
 export default function ChatWindow({
@@ -53,6 +53,8 @@ export default function ChatWindow({
     const [botResponse, setBotResponse] = useState('');
     const {chats, updateChats }= useContext(DataContext)
 
+    const { speak } = useSpeechSynthesis()
+
     const clearContext = () =>{
         updateChats(conversations);
     }
@@ -73,59 +75,6 @@ export default function ChatWindow({
         }
     }, [results]);
 
-    // Text-to-Speech function
-    const speech = new Speech();
-    speech.init({
-        volume: 0.5,
-        lang: "en-GB",
-        rate: 1,
-        pitch: 1,
-        'voice':'Google UK English Female',
-        'splitSentences': true,
-    })
-        .then((data: any) => {
-            console.log("Speech is ready", data);
-        })
-        .catch((e: any) => {
-            console.error("An error occured while initializing : ", e);
-        });
-
-    if (!speech.hasBrowserSupport()){
-        alert("Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !");
-    }
-
-    const speak = (utt: string) => {
-        speech.speak({
-            text: utt,
-            queue: false,
-            listeners: {
-                onstart: () => {
-                    console.log("Start utterance");
-                },
-                onend: () => {
-                    console.log("End utterance");
-                },
-                onresume: () => {
-                    console.log("Resume utterance");
-                },
-                onboundary: event => {
-                    console.log(
-                        event.name +
-                        " boundary reached after " +
-                        event.elapsedTime +
-                        " milliseconds."
-                    );
-                }
-            }
-        })
-            .then((data: any) => {
-                console.log("Success !", data);
-            })
-            .catch((e: any) => {
-                console.error("An error occurred :", e);
-            });
-    }
-
     function query(user_input: string) {
         let shallow = Object.assign({}, userInputObj);
         shallow["session_id"] = session_id
@@ -142,7 +91,7 @@ export default function ChatWindow({
                 const response = getResponse(data);
                 if(enableVoice) {
                     setBotResponse(response);
-                    speak(response);
+                    if (enableVoice){speak({ text: response })};
                 }
             })
             .catch((err) => console.log(err));
@@ -203,7 +152,7 @@ export default function ChatWindow({
             setTimeout(() => {
                 updateChats([...chats, { text: botResponse, speaker: 'bot' }]);
                 if (getDialogueLog) {getDialogueLog(chats);}
-                if (enableVoice) {speak(botResponse)}
+                if (enableVoice){speak({ text: botResponse });}
             }, 1000);
         }
     }, [botResponse]);
@@ -228,7 +177,7 @@ export default function ChatWindow({
             </div>
 
             <div id="chat-window" style={{ height }}>
-                {chats?.map((item, index) => (
+                {chats?.map((item: { speaker: string; text: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }, index: React.Key | null | undefined) => (
                     <div
                         key={index}
                         style={{
@@ -251,18 +200,18 @@ export default function ChatWindow({
                   />
               ) : null}
             </span>
-                        <span
-                            style={{
-                                background: item.speaker === 'bot' ? 'aliceblue' : '#f2f2f1',
-                                padding: 8,
-                                display: 'inline-block',
-                                maxWidth: 220,
-                                borderRadius:
-                                    item.speaker === 'bot'
-                                        ? '2px 12px 12px 12px'
-                                        : '12px 2px 12px 12px',
-                            }}
-                        >
+            <span
+                style={{
+                    background: item.speaker === 'bot' ? 'aliceblue' : '#f2f2f1',
+                    padding: 8,
+                    display: 'inline-block',
+                    maxWidth: 220,
+                    borderRadius:
+                        item.speaker === 'bot'
+                            ? '2px 12px 12px 12px'
+                            : '12px 2px 12px 12px',
+                }}
+            >
               {item.text}
             </span>
                     </div>
@@ -271,24 +220,26 @@ export default function ChatWindow({
             </div>
 
            <div className="gap-3" style={{'display': 'flex', 'flexDirection': 'row', 'alignItems': 'center', 'alignSelf': 'stretch'}}>
-               <InputGroup className="mb-2">
-                   <Form.Control
-                       as="textarea"
-                       rows={1}
-                       placeholder="Type your message"
-                       value={userQuery}
-                       onChange={(e: any) => setUserQuery(e.target.value)}
-                   />
-                   <Button variant="outline-secondary" onClick={() => handleKeyPress(userQuery)}>Send</Button>
-               </InputGroup>
-                {enableVoice ? (
-                    <div className="ms-3">
-                        <Button  onClick={isRecording ? stopSpeechToText : startSpeechToText} variant="outline-secondary" style={{ 'paddingTop': 0, 'paddingBottom': 0, 'paddingLeft': 0, 'paddingRight': 0 , 'backgroundColor':'transparent'}}>
-                            {isRecording ? <img src={stop_speech} style={{height:40, width:40, alignItems: 'center', justifyContent: 'center'}} />
-                                : <img src={start_speech} style={{height:40, width:40, alignItems: 'center', justifyContent: 'center'}} />}
-                        </Button>
-                    </div>
-                ) : null}
+
+               {enableVoice ? (
+                   <div className="ms-3">
+                       <Button  onClick={isRecording ? stopSpeechToText : startSpeechToText} variant="outline-secondary" style={{ 'paddingTop': 0, 'paddingBottom': 0, 'paddingLeft': 0, 'paddingRight': 0 , 'backgroundColor':'transparent'}}>
+                           {isRecording ? <img src={stop_speech} style={{height:40, width:40, alignItems: 'center', justifyContent: 'center'}} />
+                               : <img src={start_speech} style={{height:40, width:40, alignItems: 'center', justifyContent: 'center'}} />}
+                       </Button>
+                   </div>
+               ) :
+                   <InputGroup className="mb-2 text-center">
+                       <Form.Control
+                           as="textarea"
+                           rows={1}
+                           placeholder="Type your message"
+                           value={userQuery}
+                           onChange={(e: any) => setUserQuery(e.target.value)}
+                       />
+                       <Button variant="outline-secondary" onClick={() => handleKeyPress(userQuery)}>Send</Button>
+                   </InputGroup>
+               }
             </div>
         </div>
     );

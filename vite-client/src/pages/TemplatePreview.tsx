@@ -217,6 +217,7 @@ export default function TemplatePreview() {
                               width={template.template === 'chat-only' ? 730 : 350}
                           />
                         </Tab>
+                        {enableBugReport ? (
                         <Tab eventKey="log" title="JSON Log">
                           <div style={{"borderStyle": "thick double #32a1ce", "width":730}}>
 
@@ -234,6 +235,7 @@ export default function TemplatePreview() {
                             </div>
                           </div>
                         </Tab>
+                        ): null}
                       </Tabs>
                       :
                       <ChatWindow
