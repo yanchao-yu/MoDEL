@@ -49,13 +49,6 @@ const LogPlayback = () => {
         }
     }
 
-    // function extracted(d: any, key: string, role: string) {
-    //     console.log("[" + role + "] [" + key + "]: " + d[key]);
-    //     console.log(Object.keys(jsons).length);
-    //     updateChats((chats: any) => [...chats, {text: d[key], speaker: role}]);
-    //     setFilterJsons((jsons: any) => [...jsons, d]);
-    // }
-
     function extracted(d: any, key: string, text: string, role: string) {
         console.log("[extracted] [" + role + "] [" + key + "]: " + text);
         console.log("[extracted]" + Object.keys(jsons).length);
@@ -326,7 +319,7 @@ const LogPlayback = () => {
                     </Tab>
                 </Tabs>
                 <div>
-                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Group className="mb-3" controlId="loginput-form">
                         <InputGroup className="mb-2">
                             <Form.Control
                                 as="textarea"
@@ -345,7 +338,7 @@ const LogPlayback = () => {
                         </Form.Select>
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                    <Form.Group className="mb-3" controlId="logoutput_form">
                         <Form.Label>Please provide an server output example (JSON object)</Form.Label>
                         <InputGroup className="mb-2">
                             <Form.Control
