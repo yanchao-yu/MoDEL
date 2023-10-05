@@ -19,7 +19,7 @@ services:
       context: ./server
     container_name: server_backend
     ports:
-      - '80:80'
+      - '3031:3031'
     volumes:
       - ./server:/app
       - /app/node_modules
