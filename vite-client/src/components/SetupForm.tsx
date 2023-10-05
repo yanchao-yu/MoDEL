@@ -211,7 +211,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     // @ts-ignore
     return (
     <div>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form.Group className="mb-3" controlId="title_form">
             <Form.Label>Title</Form.Label>
             <Form.Control
                 type="text"
@@ -219,19 +219,19 @@ export default function SetupForm({ display_area = true, webcam = true}) {
             />
         </Form.Group>
       <div className="input-div">
-        <label className="styled-label" htmlFor="description">
+        <label className="styled-label">
           Description
         </label>
-          <Editor
-              apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
-              onInit={(evt, editor) => (descriptionEditorRef.current = editor)}
-              initialValue=''
-              init={{
-                  height: 500,
-                  content_style:
-                      'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-              }}
-          />
+        <Editor
+          apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
+          onInit={(evt, editor) => (descriptionEditorRef.current = editor)}
+          initialValue=''
+          init={{
+              height: 500,
+              content_style:
+                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+          }}
+        />
       </div>
         {display_area ? (
             <div className="input-div">
@@ -319,7 +319,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                                 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
                         }}
                     /></div>
-                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Group className="mb-3" controlId="camera_form">
                     <Form.Label>Choose Camera Device:</Form.Label>
                     <Form.Select
                         value={sysoutput_key}
@@ -350,7 +350,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       <div className="divider-no-line"></div>
       <h3>&#8212; Bot Integration</h3>
       <div className="divider"></div>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+        <Form.Group className="mb-3" controlId="platform_form">
             <Form.Label> Development Platform </Form.Label>
             <Form.Select
                 value={developmentPlatform}
@@ -361,26 +361,9 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                 <option value="custom-server">Custom Server</option>
             </Form.Select>
         </Form.Group>
-      {/*<div className="input-div">*/}
-      {/*  <label className="styled-label" htmlFor="developmentPlatform">*/}
-      {/*    Development Platform*/}
-      {/*  </label>*/}
-      {/*  <select*/}
-      {/*    className="styled-select"*/}
-      {/*    name="developmentPlatform"*/}
-      {/*    id="developmentPlatform"*/}
-      {/*    value={developmentPlatform}*/}
-      {/*    onChange={(e) => setDevelopmentPlatform(e.target.value)}*/}
-      {/*  >*/}
-      {/*    <option value="">Choose your bot platform...</option>*/}
-      {/*    <option value="dialog-flow">Dialogflow</option>*/}
-      {/*    <option value="custom-server">Custom Server</option>*/}
-      {/*  </select>*/}
-      {/*</div>*/}
-      {/* Dialogflow configuration */}
       {developmentPlatform && developmentPlatform === 'dialog-flow' ? (
       <div>
-          <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+          <Form.Group className="mb-3" controlId="embed_form">
               <Form.Label> Paste Embed Code </Form.Label>
               <Form.Control
                   as="textarea"
@@ -404,7 +387,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       ) : null}
       {developmentPlatform && developmentPlatform === 'custom-server' ? (
         <div>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="bot_form">
                 <Form.Label> Bot Name </Form.Label>
                 <Form.Control
                     type="text"
@@ -431,7 +414,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                 />
             </Form.Group>
             <div>
-                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Group className="mb-3" controlId="input_form">
                     <Form.Label>Please provide an user input example (JSON object)</Form.Label>
                     <InputGroup className="mb-2">
                         <Form.Control
@@ -451,7 +434,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     </Form.Select>
                 </Form.Group>
 
-                <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                <Form.Group className="mb-3" controlId="ourput_form">
                     <Form.Label>Please provide an server output example (JSON object)</Form.Label>
                     <InputGroup className="mb-2">
                         <Form.Control
@@ -477,7 +460,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
       <h3>&#8212; User Consent</h3>
       <div className="divider"></div>
       <div className="input-div">
-        <label className="styled-label" htmlFor="consent-text">
+        <label className="styled-label">
           Consent text
         </label>
         <Editor
