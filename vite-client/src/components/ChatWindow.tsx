@@ -41,7 +41,7 @@ export default function ChatWindow({
         googleCloudRecognitionConfig: {
             languageCode: 'en-US'
         },
-        googleApiKey: "AIzaSyAtHeCifoPmvbYtQAAJ1D4bZn_DQIq3mRE",
+        googleApiKey: "Please put your own key",
         useLegacyResults: false
     });
 
