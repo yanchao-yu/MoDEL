@@ -5,7 +5,7 @@ import ChatBg from '../svgs/chat-bg.svg';
 import ChatLeft from '../svgs/chat-left.svg';
 import ChatRight from '../svgs/chat-right.svg';
 import Darkmode from 'drkmd-js';
-import {Col, Container, Row} from "react-bootstrap";
+import {Col, Form, Row} from "react-bootstrap";
 
 export default function Templates() {
   const match = useRouteMatch();
@@ -28,9 +28,9 @@ export default function Templates() {
         Select the template that matches your desired layout
       </h3>
 
-      <Container>
-        <Row>
-          <Col sm="auto">
+      <Form>
+        <Row className="mb-3">
+          <Col>
             <div className="template">
               <button type="button" value="chat-only" onClick={handleTemplateSelect}
                       className="primary round outline">
@@ -39,7 +39,7 @@ export default function Templates() {
               </button>
             </div>
           </Col>
-          <Col sm="auto">
+          <Col>
             <div className="template">
               <button type="button" value="chat-content-background" onClick={handleTemplateSelect}
                       className="primary round outline">
@@ -53,8 +53,8 @@ export default function Templates() {
           </Col>
         </Row>
 
-        <Row>
-          <Col sm="auto">
+        <Row className="mb-3">
+          <Col>
             <div className="template">
               <button type="button" value="chat-content-left" onClick={handleTemplateSelect}
                       className="primary round outline">
@@ -67,7 +67,7 @@ export default function Templates() {
               </button>
             </div>
           </Col>
-          <Col sm="auto">
+          <Col>
             <div className="template">
               <button type="button" value="chat-content-webcam" onClick={handleTemplateSelect}
                       className="primary round outline">
@@ -81,7 +81,7 @@ export default function Templates() {
             </div>
           </Col>
         </Row>
-      </Container>
+      </Form>
     </div>
   );
 }
