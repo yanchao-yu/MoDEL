@@ -1,516 +1,350 @@
 import * as React from 'react';
-import { useState, useRef } from 'react';
+import {useState, useRef, useEffect, useContext} from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import { Editor } from '@tinymce/tinymce-react';
 import { postData, generateString } from '../utils';
-import Webcam from "react-webcam";
-import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import Darkmode from 'drkmd-js'
 import xtype from 'xtypejs'
 
+import {
+    Card,
+    CardBody,
+    Col,
+    Container,
+    Row,
+    Stack,
+    Button,
+} from "react-bootstrap";
+import ComponentOptions from "../components/ComponentOptions";
+import AppActionButtons from "../components/AppActionButtons";
+import MainContainer from "../components/MainContainer";
+import DataContent from "../components/DataContent";
+import AsideContent from "../components/AsideContent";
+import Image from "../components/Image";
+import Chat from "../components/Chat";
+import { ConfigContext } from "../app/configContext";
+import {
+    DndContext,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import { SortableContext, arrayMove } from "@dnd-kit/sortable";
+import WebcamCapture from "../components/WebcamCapture";
+import JsonPreviewer from "../components/JsonPreviewer";
+import UserConsent from "../components/UserConsent";
+import DataContentOptions from "../components/DataContentOptions";
+import useClipboard from 'react-use-clipboard';
+import DisplayUserConsent from "../components/DisplayUserConsent";
+
+
 import {sampleInputData, sampleOutputData} from '../hooks/sampleData'
-import {Button, Form, InputGroup} from "react-bootstrap";
+import {DataContext} from "../app/store";
 
 export default function SetupForm({ display_area = true, webcam = true}) {
-    const template = useParams();
-    // console.log("template -> template", template.template)
-    const history = useHistory();
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [embedCode, setEmbedCode] = useState('');
-    const [developmentPlatform, setDevelopmentPlatform] = useState('');
-    const [botName, setBotName] = useState('');
-    const [botIntro, setBotIntro] = useState('');
-    const [botIcon, setBotIcon] = useState('');
-    const [serverURL, setServerURL] = useState('');
-    const [consentNote, setConsentText] = useState('I agree to the following...');
-    const [enableBugReport, setEnableBugReport] = useState(false);
-    const [webcamId, setWebcamId] = useState('');
-    const [enableFeedback, setEnableFeedback] = useState(false);
-    const [enableVoice, setEnableVoice] = useState(false);
-    const [feedbackLink, setFeedbackLink] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    const [input, setInput] = useState<any>('');
-    const [userInputObj, setInputObj] = useState<any>(sampleInputData);
-    const [userinput_key, setUserInputKey] = useState<any>('text');
-    const [sysoutput_key, setSysOutputKey] = useState<any>('response');
-    const [output, setOutput] = useState<any>('');
-    const [input_keys, setInputKeys] = useState<any>([]);
-    const [output_keys, setOutputKeys] = useState<any>([]);
-
-    const editorRef = useRef(null);
-    const descriptionEditorRef = useRef(null);
-    const concentEditorRef = useRef(null);
-
-    const darkmode = new Darkmode()
-    darkmode.toggle()
-    darkmode.attach()
-
-    const save = () => {
     const botId = generateString(8);
-    const dataObj = {
-        "botId": botId,
-        "title": title,
-        "description":
-            descriptionEditorRef.current?.getContent() || '<p>No content provided</p>',
-        "embedCode": embedCode,
-        "developmentPlatform": developmentPlatform,
-        "botName": botName,
-        "botIntro": botIntro,
-        "botIcon": botIcon,
-        "serverURL": serverURL,
-        "userInputObj": userInputObj,
-        "userinputKey": userinput_key,
-        "sysoutputKey": sysoutput_key,
-        "consentNote":
-            concentEditorRef.current?.getContent() || '<p>No content provided</p>',
-        "enableBugReport": enableBugReport,
-        "enableFeedback": enableFeedback,
-        "enableVoice": enableVoice,
-        "webcamId": webcamId,
-        "feedbackLink": feedbackLink || 'https://forms.gle/PE9Sef4tLrQPW6bE6',
-        "displayContent":
-            editorRef.current?.getContent() || '<p>No content provided</p>',
-    };
-    setLoading(true);
-    window.localStorage.setItem('obj', JSON.stringify(dataObj));
-    const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${botId}`;
-    console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
-      console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
-    console.log('dataObj: '+ dataObj);
-    postData(url, dataObj)
-      .then(async (data) => {
-        console.log(data);
-        history.push(`/templates/${template.template}/preview`);
-      })
-      .catch((err) => console.log(err));
-    };
+    const dataCtx =React.useContext(ConfigContext)
+    console.log(dataCtx)
 
-    function sampleOutMarkup() {
-        return JSON.stringify(sampleOutputData);
-    }
+    // const {
+    //     selectedChatOption,
+    //     sameComponents,
+    //     setSameComponents,
+    //     appStatus,
+    //     setAppStatus,
+    //     setSelectedChatOption,
+    //     agreeToLaunch,
+    //     setAgreeToLaunch,
+    //     setSelectedComponent,
+    //     userConsent,
+    // } = useContext(ConfigContext);
+    const [componentOrder, setComponentOrder] = useState([
+        "data-content",
+        "image-content",
+        "chat-content",
+    ]);
+    const [components, setComponents] = useState([null, null, null]);
+    const [linkCopied, setLinkCopied] = useState(false);
 
-    function sampleInputMarkup() {
-        return JSON.stringify(sampleInputData);
-    }
-    const videoConstraints = {
-      width: 640,
-      height: 360,
-      facingMode: "user"
-    };
+    // Function to handle drop end event
+    const handleDragEnd = (event: { active: any; over: any; }) => {
+        const { active, over } = event;
 
-    const webcamRef = React.useRef(null);
-    const WebcamCapture = async () => {
-      const capture = React.useCallback(
-          () => {
-                const imageSrc = webcamRef.current.getScreenshot();},
-          [webcamRef]
-      );
-    };
-
-    const [devices, setDevices] = React.useState([]);
-    const [select_device, setSelectDevices] = React.useState([]);
-    const handleDevices = React.useCallback((mediaDevices) => {
-      setDevices(mediaDevices.filter(({kind}:{kind:string}) => kind === "videoinput"))
-    }, [setDevices]);
-
-    React.useEffect(() => {
-        if (!navigator.mediaDevices?.enumerateDevices) {
-            console.log("enumerateDevices() not supported.");
-        } else {
-            // List cameras and microphones.
-            navigator.mediaDevices
-                .enumerateDevices()
-                .then((handleDevices) => {
-                    handleDevices.forEach((device) => {
-                        console.log(`${device.kind}: ${device.label} id = ${device.deviceId}`);
-                    });
-                })
-                .catch((err) => {
-                    console.error(`${err.name}: ${err.message}`);
-                });
+        if (active.id !== over.id) {
+            setComponentOrder((items) => {
+                const oldIndex = items.indexOf(active.id);
+                const newIndex = items.indexOf(over.id);
+                return arrayMove(items, oldIndex, newIndex);
+            });
         }
-        //
-        //
-        //
-        //
-        // navigator.mediaDevices.enumerateDevices().then(handleDevices);
-      },[handleDevices]);
-    const defaultOption = devices[0];
+    };
 
-    const onSelect = (option: any) => {
-      setSelectDevices(option.value)
-      setWebcamId(option.value.deviceId)
-    }
+    // It is used to create a sensor to detect the pointer events
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                // The distance in pixels the pointer must travel to activate a drag
+                distance: 10,
+            },
+        })
+    );
 
-    const enterKeyHandler = (type: string) => {
-        const d = type === 'input' ? input : output
-        const text = JSON.parse(d || "");
-        getKeys(text, type)
-    }
+    useEffect(() => {
+        // It is used to create components based on the component order
+        const _components = componentOrder.map((id) => {
+            switch (id) {
+                case "data-content":
+                    return dataCtx.selectedChatOption !== "chat-only" &&
+                    dataCtx.selectedChatOption !== "chat-with-image" ? (
+                        <DataContent />
+                    ) : (
+                        ""
+                    );
+                case "image-content":
+                    return dataCtx.selectedChatOption !== "chat-only" &&
+                    dataCtx.selectedChatOption !== "chat-with-content" ? (
+                        <Image />
+                    ) : (
+                        ""
+                    );
+                case "webcam-content":
+                    return <WebcamCapture />;
+                case "chat-content":
+                    return <Chat />;
+                default:
+                    return null;
+            }
+        });
+        setComponents(_components);
+    }, [componentOrder, dataCtx.selectedChatOption]);
 
-    const getKeys = (json: any, stype: string) => {
-        let keys: JSX.Element[] = []
+    useEffect(() => {
+        dataCtx.setSameComponents(
+            dataCtx.selectedChatOption && components[0] && (components[1] || components[2])
+                ? true
+                : false
+        );
+    }, [dataCtx.selectedChatOption, components]);
 
-        const data_type = xtype(json)
-        // Check whether the system receive a JSON Array
-        if (data_type === 'single_elem_array' || data_type === 'multi_elem_array'){
-            // iterate each element in the JSON Array
-            json.forEach(
-                function(d: any){
-                    let object_keys = Object.keys(d)
-                    object_keys.forEach(
-                        function(k: any){
-                            keys.push(<option key={k} value={k}>{k}</option>)
-                            // Check whether the value is another JSON Object
-                            const value_type = xtype(json[k])
-                            if ( value_type ===  "single_prop_object" || value_type === 'multi_prop_object'){
-                                let sub_keys = Object.keys(json[k])
-                                let sub_keys_str = sub_keys.length > 0
-                                    && sub_keys.map((sub_key, j) => {
-                                        keys.push(<option key={k+'.'+j} value={k+'.'+sub_key}>{k+'.'+sub_key}</option>)
-                                    });
+    const SortedSections = () => (
+        <SortableContext
+            items={componentOrder}
+            className={` gap-2 ${
+                dataCtx.selectedChatOption && !dataCtx.sameComponents ? "d-flex" : ""
+            }`}
+        >
+            {dataCtx.selectedChatOption ? (
+                <div className="pe-1 w-100">
+                    {components[0] && (
+                        <Col
+                            xs={
+                                dataCtx.selectedChatOption && !dataCtx.sameComponents
+                                    ? 12
+                                    : dataCtx.sameComponents
+                                        ? 6
+                                        : dataCtx.appStatus !== "edit"
+                                            ? 7
+                                            : 6
                             }
-                        });
-                }
-            )
-        }
-        // Check whether the system receive a JSON Object
-        else if ( data_type ===  "single_prop_object" || data_type === 'multi_prop_object'){
-            let object_keys = Object.keys(json)
-            // iterate each key in the JSON object
-            object_keys.forEach(
-                function(key: any){
-                    keys.push(<option key={key} value={key}>{key}</option>)
-                    const value_type = xtype(json[key])
-                    // Check whether the value is another JSON Object
-                    if ( value_type ===  "single_prop_object" || value_type === 'multi_prop_object'){
-                        let sub_keys = Object.keys(json[key])
-                        sub_keys.forEach(
-                            function(sub_key: any){
-                                keys.push(<option value={key+'.'+sub_key}>{key+'.'+sub_key}</option>)
-                            });
+                            className="h-100 w-100"
+                        >
+                            <MainContainer component={components[0]} />
+                        </Col>
+                    )}
+                </div>
+            ) : (
+                components[0] && (
+                    <Col
+                        xs={
+                            dataCtx.selectedChatOption && !dataCtx.sameComponents
+                                ? 12
+                                : dataCtx.sameComponents
+                                    ? 6
+                                    : dataCtx.appStatus !== "edit"
+                                        ? 7
+                                        : 6
+                        }
+                        className="h-100"
+                    >
+                        <MainContainer component={components[0]} />
+                    </Col>
+                )
+            )}
+
+            {(components[1] || components[2]) && (
+                <Col
+                    xs={
+                        dataCtx.selectedChatOption && !dataCtx.sameComponents
+                            ? 12
+                            : dataCtx.sameComponents
+                                ? 6
+                                : dataCtx.appStatus !== "edit"
+                                    ? 5
+                                    : 4
                     }
-                }
-            );
-        }
-        // Add keys and object into the input config
-        if (stype === 'input'){
-            setInputObj(json)
-            setInputKeys(keys)
-        }
-        // Add keys and object into the output config
-        else if (stype === 'output'){
-            setOutput(json)
-            setOutputKeys(keys)
-        }
-    }
+                    className="h-100"
+                >
+                    <AsideContent
+                        topComponent={components[1]}
+                        bottomComponent={components[2]}
+                    />
+                </Col>
+            )}
+        </SortableContext>
+    );
 
-    // @ts-ignore
+    const [isCopied, setCopied] = useClipboard(
+        `${import.meta.env.VITE_BASE_URL}/demo/${botId}`
+    );
+
+    // const dataObj = {
+    //     "botId": botId,
+    //     "title": title,
+    //     "description":
+    //         descriptionEditorRef.current?.getContent() || '<p>No content provided</p>',
+    //     "embedCode": embedCode,
+    //     "developmentPlatform": developmentPlatform,
+    //     "botName": botName,
+    //     "botIntro": botIntro,
+    //     "botIcon": botIcon,
+    //     "serverURL": serverURL,
+    //     "userInputObj": userInputObj,
+    //     "userinputKey": userinput_key,
+    //     "sysoutputKey": sysoutput_key,
+    //     "consentNote":
+    //         concentEditorRef.current?.getContent() || '<p>No content provided</p>',
+    //     "enableBugReport": enableBugReport,
+    //     "enableFeedback": enableFeedback,
+    //     "enableVoice": enableVoice,
+    //     "webcamId": webcamId,
+    //     "feedbackLink": feedbackLink || 'https://forms.gle/PE9Sef4tLrQPW6bE6',
+    //     "displayContent":
+    //         editorRef.current?.getContent() || '<p>No content provided</p>',
+    // };
+    // setLoading(true);
+    // window.localStorage.setItem('obj', JSON.stringify(dataObj));
+    // const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${botId}`;
+    // console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
+    //   console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
+    // console.log('dataObj: '+ dataObj);
+    // postData(url, dataObj)
+    //   .then(async (data) => {
+    //     console.log(data);
+    //     history.push(`/templates/${template.template}/preview`);
+    //   })
+    //   .catch((err) => console.log(err));
+    // };
+
     return (
-    <div>
-        <Form.Group className="mb-3" controlId="title_form">
-            <Form.Label>Title</Form.Label>
-            <Form.Control
-                type="text"
-                onChange={(e: any) => setTitle(e.target.value)}
-            />
-        </Form.Group>
-      <div className="input-div">
-        <label className="styled-label">
-          Description
-        </label>
-        <Editor
-          apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
-          onInit={(evt, editor) => (descriptionEditorRef.current = editor)}
-          initialValue=''
-          init={{
-              height: 500,
-              content_style:
-                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-          }}
-        />
-      </div>
-        {display_area ? (
-            <div className="input-div">
-                <label className="styled-label">Display Area</label>
-                <Editor
-                    apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
-                    onInit={(evt, editor) => (editorRef.current = editor)}
-                    initialValue='<h1>Display Area Title</h1>
-            <p>You can add one or more paragraphs to the display area</p>
-            <p>You can also embed videos from Youtube and other sources</p>
-            <p><iframe width="530" height="400" src="https://www.youtube.com/embed/TGAobsLMuc0" title="5 Best Chatbot Platforms To Develop Bots In 2022" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></p>
-            <p>Images can also be added to the display area</p>
-            <p><img src="https://th.bing.com/th/id/OIP.PaDdrv5H2GXu-JlO9dfu_AHaDt?pid=ImgDet&amp;rs=1" alt="" width="474" height="237"></p>
-            <p>Feel free to add more elements like tables and other things as may be required...</p>'
-                    init={{
-                        height: 500,
-                        menubar: 'file edit view insert format tools table help',
-                        plugins: [
-                            'advlist',
-                            'autolink',
-                            'lists',
-                            'link',
-                            'image',
-                            'charmap',
-                            'preview',
-                            'anchor',
-                            'searchreplace',
-                            'visualblocks',
-                            'code',
-                            'fullscreen',
-                            'insertdatetime',
-                            'media',
-                            'table',
-                            'code',
-                            'help',
-                            'wordcount',
-                        ],
-                        toolbar:
-                            'undo redo | blocks | ' +
-                            'bold italic media image | forecolor alignleft aligncenter ' +
-                            'alignright alignjustify | bullist numlist outdent indent | ' +
-                            'removeformat | help',
-                        content_style:
-                            'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                    }}
-                />
-            </div>
-        ) : null}
-        {webcam ? (
-            <div>
-                <div className="input-div">
-                    <label className="styled-label">Display Area</label>
-                    <Editor
-                        apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
-                        onInit={(evt, editor) => (editorRef.current = editor)}
-                        initialValue='<h1>Display Area Title</h1>
-                <p>You can add one or more paragraphs to the display area</p>
-                <p>Feel free to add more elements like tables and other things as may be required...</p>'
-                        init={{
-                            height: 500,
-                            menubar: 'file edit view insert format tools table help',
-                            plugins: [
-                                'advlist',
-                                'autolink',
-                                'lists',
-                                'link',
-                                'charmap',
-                                'preview',
-                                'anchor',
-                                'searchreplace',
-                                'visualblocks',
-                                'code',
-                                'fullscreen',
-                                'insertdatetime',
-                                'table',
-                                'code',
-                                'help',
-                                'wordcount',
-                            ],
-                            toolbar:
-                                'undo redo | blocks | ' +' forecolor alignleft aligncenter ' +
-                                'alignright alignjustify | bullist numlist outdent indent | ' +
-                                'removeformat | help',
-                            content_style:
-                                'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-                        }}
-                    /></div>
-                <Form.Group className="mb-3" controlId="camera_form">
-                    <Form.Label>Choose Camera Device:</Form.Label>
-                    <Form.Select
-                        value={sysoutput_key}
-                        onChange={(e) => setSysOutputKey(e.target.value)}
-                    >
-                        {devices}
-                    </Form.Select>
-                    <Form.Label> Choose Camera Device</Form.Label>
-                </Form.Group>
-
-                <Dropdown options={devices}
-                          onChange={onSelect}
-                          value={defaultOption}
-                          placeholder="Select an option"
-                          arrowClosed={<span className="arrow-closed" />}
-                          arrowOpen={<span className="arrow-open" />}/>
-                <label><br /></label>
-                <Webcam
-                    audio={false}
-                    height={videoConstraints.height}
-                    ref={webcamRef}
-                    screenshotFormat="image/jpeg"
-                    width={videoConstraints.width}
-                    videoConstraints={{deviceId: select_device.deviceId}}
-                />
-            </div>
-        ) : null}
-      <div className="divider-no-line"></div>
-      <h3>&#8212; Bot Integration</h3>
-      <div className="divider"></div>
-        <Form.Group className="mb-3" controlId="platform_form">
-            <Form.Label> Development Platform </Form.Label>
-            <Form.Select
-                value={developmentPlatform}
-                onChange={(e) => setDevelopmentPlatform(e.target.value)}
-            >
-                <option value="">Choose your bot platform...</option>
-                <option value="dialog-flow">Dialogflow</option>
-                <option value="custom-server">Custom Server</option>
-            </Form.Select>
-        </Form.Group>
-      {developmentPlatform && developmentPlatform === 'dialog-flow' ? (
-      <div>
-          <Form.Group className="mb-3" controlId="embed_form">
-              <Form.Label> Paste Embed Code </Form.Label>
-              <Form.Control
-                  as="textarea"
-                  rows={2}
-                  placeholder='<iframe width="350" height="430" allow="microphone;" src="https://console.dialogflow.com/api-client/demo/embedded/YOUR_API_KEY"></iframe>'
-                  onChange={(e) => setEmbedCode(e.target.value)}
-              />
-          </Form.Group>
-          <small className="hint-color">
-            Need help with getting the embed code? Follow the steps{' '}
-            <a
-              style={{ fontWeight: 'bold' }}
-              href="https://cloud.google.com/dialogflow/es/docs/quick/integration"
-              target="_blank"
-            >
-              here
-            </a>{' '}
-            for instructions
-          </small>
-        </div>
-      ) : null}
-      {developmentPlatform && developmentPlatform === 'custom-server' ? (
         <div>
-            <Form.Group className="mb-3" controlId="bot_form">
-                <Form.Label> Bot Name </Form.Label>
-                <Form.Control
-                    type="text"
-                    placeholder="AstroBot"
-                    onChange={(e: any) => setBotName(e.target.value)}
-                />
-                <Form.Label> Bot Intro </Form.Label>
-                <Form.Control
-                    type="text"
-                    placeholder="Hello, I am AstroBot. Ask me anything about astronomy"
-                    onChange={(e: any) => setBotIntro(e.target.value)}
-                />
-                <Form.Label>Bot Icon (URL)</Form.Label>
-                <Form.Control
-                    type="text"
-                    placeholder="https://cdn-icons-png.flaticon.com/512/4712/4712035.png"
-                    onChange={(e: any) => setBotIcon(e.target.value)}
-                />
-                <Form.Label>Server URL (Endpoint)</Form.Label>
-                <Form.Control
-                    type="text"
-                    placeholder="https://kpfm2b.sse.codesandbox.io/"
-                    onChange={(e: any) => setServerURL(e.target.value)}
-                />
-            </Form.Group>
-            <div>
-                <Form.Group className="mb-3" controlId="input_form">
-                    <Form.Label>Please provide an user input example (JSON object)</Form.Label>
-                    <InputGroup className="mb-2">
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Type an example of user query in JSONObject and press 'Go'"
-                            onChange={(e: any) => setInput(e.target.value)}
-                        />
-                        <Button variant="outline-secondary" onClick={() => enterKeyHandler("input")}>Go</Button>
-                    </InputGroup>
-                    <Form.Label>Please tell me where I should provide the user input:</Form.Label>
-                    <Form.Select
-                        value={userinput_key}
-                        onChange={(e) => setUserInputKey(e.target.value)}
-                    >
-                        {input_keys}
-                    </Form.Select>
-                </Form.Group>
-
-                <Form.Group className="mb-3" controlId="ourput_form">
-                    <Form.Label>Please provide an server output example (JSON object)</Form.Label>
-                    <InputGroup className="mb-2">
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            placeholder="Type an example of system response in JSONObject and press 'Go'"
-                            onChange={(e: any) => setOutput(e.target.value)}
-                        />
-                        <Button variant="outline-secondary" onClick={() => enterKeyHandler("output")}>Go</Button>
-                    </InputGroup>
-                    <Form.Label>Please tell me where I can find the system response:</Form.Label>
-                    <Form.Select
-                        value={sysoutput_key}
-                        onChange={(e) => setSysOutputKey(e.target.value)}
-                    >
-                        {output_keys}
-                    </Form.Select>
-                </Form.Group>
-            </div>
+            <Stack
+                direction="vertical"
+                gap={2}
+                className="align-items-end p-3"
+                style={{ height: "100dvh", maxHeight: "100vh" }}
+            >
+                <Card className="py-2 bg-light w-100 " style={{ height: "100%" }}>
+                    <CardBody>
+                        <Container fluid style={{ height: "100%" }}>
+                            <Row
+                                className="gx-2 "
+                                style={{
+                                    height:
+                                        dataCtx.appStatus === "preview" ||
+                                        (dataCtx.appStatus !== "launch" && dataCtx.selectedChatOption)
+                                            ? "90%"
+                                            : "100%",
+                                }}
+                            >
+                                <div className="pb-2 w-fit ps-3">
+                                    {dataCtx.appStatus === "preview" && (
+                                        <Button
+                                            onClick={() => {
+                                                dataCtx.setAppStatus("edit");
+                                                // setSelectedChatOption("");
+                                                dataCtx.setSelectedComponent(null);
+                                            }}
+                                        >
+                                            &larr; Go Back
+                                        </Button>
+                                    )}
+                                    {dataCtx.appStatus === "launch" &&
+                                        dataCtx.agreeToLaunch &&
+                                        dataCtx.userConsent?.enable_overall_feedback && (
+                                            <div className="d-flex justify-content-between align-items-center">
+                                                <Button>Share Overall Feedback</Button>
+                                                <div className="input-group mb-3 w-50">
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder={`${import.meta.env.VITE_BASE_URL}/demo/${botId}`}
+                                                        aria-label="Recipient's username"
+                                                        aria-describedby="basic-addon2"
+                                                        disabled
+                                                    />
+                                                    <Button
+                                                        className="input-group-text"
+                                                        id="basic-addon2"
+                                                        onClick={setCopied}
+                                                    >
+                                                        {linkCopied ? "Link Copied" : "Copy Link"}
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )}
+                                </div>
+                                {/* {!selectedChatOption && <DisplayUserConsent />} */}
+                                {dataCtx.appStatus === "edit" && (
+                                    <Col xs={2}>
+                                        <Stack
+                                            direction="vertical"
+                                            gap={2}
+                                            className="h-100 border rounded bg-white p-2"
+                                        >
+                                            <ComponentOptions />
+                                            <AppActionButtons setAppStatus={dataCtx.setAppStatus} />
+                                        </Stack>
+                                    </Col>
+                                )}
+                                {dataCtx.selectedChatOption ? (
+                                    <Col
+                                        xs={dataCtx.appStatus !== "edit" ? 12 : 10}
+                                        className={`h-100 border bg-white px-3 py-2 overflow-y-auto ${
+                                            dataCtx.selectedChatOption && dataCtx.sameComponents ? "d-flex" : ""
+                                        }`}
+                                    >
+                                        {dataCtx.selectedChatOption === "chat-options" ? (
+                                            <JsonPreviewer />
+                                        ) : dataCtx.selectedChatOption === "user-consent" ? (
+                                            <UserConsent />
+                                        ) : dataCtx.appStatus !== "launch" ? (
+                                            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                                                {SortedSections()}
+                                            </DndContext>
+                                        ) : dataCtx.appStatus === "launch" && !dataCtx.agreeToLaunch ? (
+                                            <DisplayUserConsent />
+                                        ) : (
+                                            SortedSections()
+                                        )}
+                                    </Col>
+                                ) : dataCtx.appStatus !== "launch" ? (
+                                    <DndContext
+                                        sensors={sensors}
+                                        onDragEnd={handleDragEnd}
+                                        className="w-100"
+                                    >
+                                        {SortedSections()}
+                                    </DndContext>
+                                ) : dataCtx.appStatus === "launch" && !dataCtx.agreeToLaunch ? (
+                                    <DisplayUserConsent />
+                                ) : (
+                                    SortedSections()
+                                )}
+                            </Row>
+                        </Container>
+                    </CardBody>
+                </Card>
+            </Stack>
         </div>
-      ) : null}
-      <div className="divider-no-line"></div>
-      <h3>&#8212; User Consent</h3>
-      <div className="divider"></div>
-      <div className="input-div">
-        <label className="styled-label">
-          Consent text
-        </label>
-        <Editor
-          apiKey="fisxby59j1hb3honmm817yqv5whh8tdl1sgo9k3km7cgyuhv"
-          onInit={(evt, editor) => (concentEditorRef.current = editor)}
-          initialValue='<p> I agree to the following... </p>'
-          init={{
-              height: 500,
-              content_style:
-                  'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-          }}/>
-      </div>
-      <div className="divider-no-line"></div>
-      <h3>&#8212; Get Feedback</h3>
-      <div className="divider"></div>
-      <div className="input-div">
-        <input
-          id="bug-report-btn"
-          type="checkbox"
-          onChange={(e) => setEnableBugReport(e.target.checked)}
-        />{' '}
-        <label htmlFor="bug-report-btn">Enable Bug Report</label>
-      </div>
-      <div className="input-div">
-        <input
-          id="feedback-btn"
-          type="checkbox"
-          onChange={(e) => setEnableFeedback(e.target.checked)}
-        />{' '}
-        <label htmlFor="feedback-btn">Enable Overall Feedback</label>
-        {enableFeedback ? (
-          <input
-            style={{ marginTop: 10 }}
-            className="styled-input"
-            placeholder="Provide Form Link (https://docs.google.com/forms/...)"
-            onChange={(e) => setFeedbackLink(e.currentTarget.value)}
-          />
-        ) : null}
-      </div>
-        <div className="input-div">
-            <input
-                id="voice-btn"
-                type="checkbox"
-                onChange={(e) => setEnableVoice(e.target.checked)}
-            />{' '}
-            <label htmlFor="feedback-btn">Enable Voice Input/Output</label>
-        </div>
-      <button className="button" onClick={save} disabled={loading}>
-        {loading ? 'Please wait...' : 'Save and Preview'}
-      </button>
-    </div>
   );
 }

@@ -6,7 +6,7 @@ export const DataContext = createContext<any>(null);
 const DataContextProvider = (props : any) => {
 
     const [data, setData] = useState<any>(null);
-  const [chats, updateChats] = useState(conversations);
+    const [chats, updateChats] = useState(conversations);
 
 
     console.log({globalChats:chats});

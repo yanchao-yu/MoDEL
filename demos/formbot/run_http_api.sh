@@ -33,3 +33,4 @@ source ${SCRIPTPATH}/.venv/bin/activate
 
 source ${SCRIPTPATH}/.venv/bin/activate
 rasa run --enable-api --cors "*"
+#rasa shell

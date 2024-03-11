@@ -284,7 +284,7 @@ export default function TemplatePreview() {
 
                 {enableFeedback ? (
                     <Button
-                        href={feedbackLink}
+                        href={feedbackLink} // link for the feedback form!!
                         target="_blank"
                         className="btn btn-success"
                         style={{ marginLeft: 10 }}

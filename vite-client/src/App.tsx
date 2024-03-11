@@ -6,34 +6,34 @@ import Template from './pages/Template';
 import TemplatePreview from './pages/TemplatePreview';
 import Demo from './pages/Demo';
 import './style.css';
+import ConfigProvider from './app/configContext'
 import DataContextProvider from './app/store'
 import LogPlayback from './pages/LogPlayback';
 
 export default function App() {
   return (
     <DataContextProvider>
-    <Router>
-      <Switch>
-        <Route path="/demo/:template/:botId">
-          <Demo />
-        </Route>
-        <Route path="/templates/:template/setup">
-          <Template />
-        </Route>
-        <Route path="/templates/:template/preview">
-          <TemplatePreview />
-        </Route>
-        <Route path="/templates">
-          <Templates />
-        </Route>
-        <Route path="/logplayback">
-          <LogPlayback />
-        </Route>
-        <Route path="/">
-          <Home />
-        </Route>
-      </Switch>
-    </Router>
+      <ConfigProvider>
+        <Router>
+          <Switch>
+            <Route path="/demo//:botId">
+              <Demo />
+            </Route>
+            <Route path="/setup">
+              <Template />
+            </Route>
+            <Route path="/preview">
+              <TemplatePreview />
+            </Route>
+            <Route path="/logplayback">
+              <LogPlayback />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+        </Router>
+      </ConfigProvider>
     </DataContextProvider>
 
   );

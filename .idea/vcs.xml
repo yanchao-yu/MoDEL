@@ -3,6 +3,5 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/demos/AMRDoctorBot" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/vite-client/text-to-speech" vcs="Git" />
   </component>
 </project>

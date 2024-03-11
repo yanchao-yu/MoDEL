@@ -112,6 +112,7 @@ responses:
     - text: "Sorry, I didn't understand you, please try input something else"
   utter_greet:
     - text: "Hello! I am restaurant search assistant! How can I help?"
+    - text: "Hey, what can i help you with"
   utter_iamabot:
     - text: "I am a bot, powered by Rasa."
   utter_restart:

@@ -9,11 +9,14 @@ echo $SCRIPTPATH
 PROJECTROOTPATH="$(dirname "$SCRIPTPATH")"
 echo $PROJECTROOTPATH
 
-#pyenv install 3.7.9
+pyenv install 3.7.9
 pyenv local 3.7.9
+pyenv global 3.7.9
 
-python -m venv .venv
 
+pyenv virtualenv 3.7.9 my-virtual-env-3.7.9
+
+pyenv activate my-virtual-env-3.7.9
 #make install-full
 
 source ${SCRIPTPATH}/.venv/bin/activate
@@ -36,4 +39,5 @@ source ${SCRIPTPATH}/.venv/bin/activate
 #rasa train nlu --out /scratch/Alana2018/SPRING/main/spring-alana/rasa/saved_models
 # by default, rasa will store latest trained model in sub-directory 'models'
 rasa train
+
 
