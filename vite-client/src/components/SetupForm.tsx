@@ -21,7 +21,7 @@ import MainContainer from "../components/MainContainer";
 import DataContent from "../components/DataContent";
 import AsideContent from "../components/AsideContent";
 import Image from "../components/Image";
-import Chat from "../components/Chat";
+import ChatWindow from "../components/ChatWindow";
 import { ConfigContext } from "../app/configContext";
 import {
     DndContext,
@@ -45,19 +45,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     const botId = generateString(8);
     const dataCtx =React.useContext(ConfigContext)
     console.log(dataCtx)
-
-    // const {
-    //     selectedChatOption,
-    //     sameComponents,
-    //     setSameComponents,
-    //     appStatus,
-    //     setAppStatus,
-    //     setSelectedChatOption,
-    //     agreeToLaunch,
-    //     setAgreeToLaunch,
-    //     setSelectedComponent,
-    //     userConsent,
-    // } = useContext(ConfigContext);
     const [componentOrder, setComponentOrder] = useState([
         "data-content",
         "image-content",
@@ -110,7 +97,19 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                 case "webcam-content":
                     return <WebcamCapture />;
                 case "chat-content":
-                    return <Chat />;
+                    return   <ChatWindow
+                        title= {dataCtx.botName}
+                        botIcon={dataCtx.botIcon}
+                        serverURL={dataCtx.serverURL}
+                        session_id={dataCtx.session_id}
+                        userInputObj={dataCtx.userInputObj}
+                        userinputKey={dataCtx.userinputKey}
+                        sysoutputKey={dataCtx.sysoutputKey}
+                        chats={[]}
+                        enableVoice={dataCtx.enableVoice}
+                        updateChats={dataCtx.updateChats}
+                        // getDialogueLog={dataCtx.getDialogueLog}
+                    />;
                 default:
                     return null;
             }

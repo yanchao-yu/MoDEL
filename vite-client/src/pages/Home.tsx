@@ -7,16 +7,9 @@ import { DataContext } from '../app/store'
 
 
 export default function Home() {
-    // const [chats, updateChats] = useState(conversations);
     const darkmode = new Darkmode()
     darkmode.toggle()
     darkmode.attach()
-    // const [files, setFiles] = useState<File[]>();
-
-    // const dataCtx =React.useContext(DataContext)
-    // console.log(dataCtx)
-    // const { setData, data } = dataCtx;
-    // console.log({files})
 
     return (
     <div>

@@ -45,6 +45,11 @@ p {
   margin: 50px auto;
 }
 
+.setup-container {
+  max-width: 90%;
+  margin: 30px auto;
+}
+
 .divider-no-line {
   margin-top: 20px;
 }
@@ -106,6 +111,7 @@ p {
 }
 
 .template {
+  display: flex;
   margin: 15px 10px;
   flex-basis: 380px;
 }

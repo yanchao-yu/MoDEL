@@ -14,6 +14,7 @@ const UserConsent = () => {
     setUserConsent,
     setSelectedChatOption,
     selectedChatOption,
+    setFeedbackLink,
   } = useContext(ConfigContext);
   const [description, setDescription] = useState("");
   const [enableVoice, setEnableVoice] = useState(true);
@@ -37,18 +38,9 @@ const UserConsent = () => {
       setEnableVoice(userConsent?.enable_voice ? true : false);
       setEnableBugReport(userConsent?.enable_bug_report ? true : false);
       setEnableFeeback(userConsent?.enable_overall_feedback ? true : false);
-      // userConsent?.enable_overall_feedback && document.getElementById('enableFeedback')?.click();
-      // userConsent?.enable_bug_report && document.getElementById('enableBugReport')?.click();
-      // document.getElementById('enableBugReport')?.click();
-      // console.log("sjhdf", document.getElementById("enableBugReport")?.value);
     }
   }, [userConsent]);
 
-  // useEffect(()=>{
-
-  // }, [])
-
-  // console.log("bug report", enableBugReport, "enableFeeback", enableFeeback)
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e?.preventDefault();
@@ -77,7 +69,7 @@ const UserConsent = () => {
   return (
     <>
       {loading ? (
-        <Preloader className=" w-100" />
+        <Preloader className="w-100" />
       ) : (
         <form
           style={{ background: "white" }}
@@ -154,30 +146,20 @@ const UserConsent = () => {
               }
               label="Enable Overall Feedback"
             />
-
-            {/* <input
-              className="form-check-input"
-              type="checkbox"
-              onChange={(e) => {
-                setEnableFeeback(e.target.value);
-              }}
-              id="enableFeedback"
-              value={enableFeeback}
-            />
-            <label className="form-check-label" htmlFor="enableFeeback">
-              Enable Overall Feedback
-            </label> */}
           </div>
           {enableFeeback ? (
-            <div className=" border bg-dark my-3 shadow px-3 py-2 text-white rounded">
-              {window?.location?.host}
-            </div>
-          ) : (
-            <></>
+              <input
+                  style={{ marginTop: 10 }}
+                  className="styled-input"
+                  placeholder="Provide Form Link (https://docs.google.com/forms/...)"
+                  onChange={(e) => setFeedbackLink(e.currentTarget.value)}
+              />
+          ) :  (
+              <></>
           )}
           <div className=" py-2">
             <button type="submit" className="btn btn-primary">
-              Save and Preview
+              Save
             </button>
           </div>
         </form>

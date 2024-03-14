@@ -49,6 +49,7 @@ const ConfigProvider = (props : any) => {
   const [videos, setVideos] = useState([]);
   const [jsonViewer, setJsonViewer] = useState(false);
   const [selectedChatOption, setSelectedChatOption] = useState("");
+  const [feedbackLink, setFeedbackLink] = useState("");
   const [enableVoice, setEnableVoice] = useState(true);
   const [botID, setBotID] = useState("");
 
@@ -88,9 +89,9 @@ const ConfigProvider = (props : any) => {
   });
   const [userConsent, setUserConsent] = useState({
     description: "",
-    enable_bug_report: true,
-    enable_voice: true,
-    enable_overall_feedback: true,
+    enable_bug_report: false,
+    enable_voice: false,
+    enable_overall_feedback: false,
   });
   const [sameComponents, setSameComponents] = useState(false);
   const [appStatus, setAppStatus] = useState("edit");
@@ -426,6 +427,8 @@ const ConfigProvider = (props : any) => {
         setAppStatus,
         agreeToLaunch,
         setAgreeToLaunch,
+        feedbackLink,
+        setFeedbackLink
       }}
     >
       {props.children}

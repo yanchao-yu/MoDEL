@@ -8,6 +8,10 @@ export interface ChatWindowInterface {
   botIcon?: string;
   serverURL?: string;
   session_id: string;
+  userInputObj: string,
+  userinputKey: string,
+  sysoutputKey: string,
+  enableVoice: string,
   chats: Chats[];
   updateChats: any;
   width?: number;

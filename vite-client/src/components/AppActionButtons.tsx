@@ -1,16 +1,17 @@
 import { useContext, useState } from "react";
 import { Button } from "react-bootstrap";
 import { ConfigContext } from "../app/configContext";
+import {Link} from "react-bootstrap-icons";
 
 function AppActionButtons({ setAppStatus }) {
-  const {
+    const {
     selectedChatOption,
     setSelectedChatOption,
     isEditText,
     setSelectedComponent,
-  } = useContext(ConfigContext);
+    } = useContext(ConfigContext);
 
-  return (
+    return (
     <>
       <Button
         variant={"outline-primary"}
@@ -65,19 +66,20 @@ function AppActionButtons({ setAppStatus }) {
             >
               Preview
             </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setAppStatus("launch");
-                setSelectedComponent(null);
-              }}
-              disabled={
-                selectedChatOption === "chat-options" ||
-                selectedChatOption === "user-consent"
-              }
-            >
-              Launch
-            </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setAppStatus("launch");
+                    setSelectedComponent(null);
+                  }}
+                  // href="/preview"
+                  disabled={
+                    selectedChatOption === "chat-options" ||
+                    selectedChatOption === "user-consent"
+                  }
+                >
+                  Launch
+                </Button>
           </>
         )}
     </>

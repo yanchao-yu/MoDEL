@@ -10,9 +10,9 @@ export default function Template() {
 
 
   return (
-    <div className="container">
+    <div className="setup-container">
       <Link className="nav-link" to="/">
-        &#8592; Back to layouts
+        &#8592; Back to Home
       </Link>
       <h1 className="title">2. Setup template</h1>
         <SetupForm display_area={false} webcam={false} />
