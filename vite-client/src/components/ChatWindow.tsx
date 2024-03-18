@@ -6,7 +6,6 @@ import { ChatWindowInterface } from '../interfaces';
 import Bot from '../svgs/bot.svg';
 import { postData } from '../utils';
 import 'regenerator-runtime/runtime'
-import { DataContext } from '../app/store';
 import xtype from "xtypejs";
 
 import { conversations } from '../chats';
@@ -53,12 +52,11 @@ export default function ChatWindow({   title,
 
     const [userQuery, setUserQuery] = useState('');
     const [botResponse, setBotResponse] = useState('');
-    const {chats, updateChats }= useContext(DataContext)
 
     // const { speak } = useSpeechSynthesis()
 
     const clearContext = () =>{
-        updateChats(conversations);
+        config.updateChats(conversations);
     }
 
     useEffect(() => {
@@ -70,7 +68,7 @@ export default function ChatWindow({   title,
             let final_transcipt = transcipt_obj.transcript;
             console.log("final_transcipt: " + final_transcipt);
 
-            updateChats([...chats, { text: final_transcipt, speaker: 'user' }]);
+            config.updateChats([...config.chats, { text: final_transcipt, speaker: 'user' }]);
             // if (getDialogueLog) {getDialogueLog(chats);}
             query(final_transcipt);
             setNumUtt(numUtt+1)
@@ -84,7 +82,7 @@ export default function ChatWindow({   title,
         shallow["speaker"] = 'user'
         shallow[userinputKey] = user_input
         console.log('query_object: ' + JSON.stringify(shallow))
-        updateChats([...chats, {text: user_input, speaker: 'user'}]);
+        config.updateChats([...config.chats, {text: user_input, speaker: 'user'}]);
         // if (getDialogueLog) {
         //     getDialogueLog(chats);
         // }
@@ -149,10 +147,10 @@ export default function ChatWindow({   title,
 
     useEffect(() => {
         if (botResponse) {
-            updateChats([...chats, { text: '...', speaker: 'bot' }]);
+            config.updateChats([...config.chats, { text: '...', speaker: 'bot' }]);
             // if (getDialogueLog) {getDialogueLog(chats);}
             setTimeout(() => {
-                updateChats([...chats, { text: botResponse, speaker: 'bot' }]);
+                config.updateChats([...config.chats, { text: botResponse, speaker: 'bot' }]);
                 // if (getDialogueLog) {getDialogueLog(chats);}
                 // if (config.enableVoice){speak({ text: botResponse });}
             }, 1000);
@@ -198,7 +196,7 @@ export default function ChatWindow({   title,
             </div>
 
             <div id="chat-window" style={{ height: "100%" }}>
-                {chats?.map((item: { speaker: string; text: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }, index: React.Key | null | undefined) => (
+                {config.chats?.map((item: { speaker: string; text: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactFragment | React.ReactPortal | null | undefined; }, index: React.Key | null | undefined) => (
                     <div
                         key={index}
                         style={{

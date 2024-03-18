@@ -1,16 +1,10 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import useClipboard from 'react-use-clipboard';
-import { Link, useParams } from 'react-router-dom';
 import ChatWindow from '../components/ChatWindow';
-import CModal from '../components/CModal';
-import BugReport from '../components/BugReport';
 import {generateID, generateString} from '../utils';
-import Webcam from "react-webcam";
 import {Tabs, Tab, Button, Form, Col, Stack, Card, CardBody, Container, Row} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { JsonViewer } from '@textea/json-viewer';
-import {ConfigContext} from "../app/configContext";
 import {arrayMove, SortableContext} from "@dnd-kit/sortable";
 import {DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
 import DataContent from "../components/DataContent";
@@ -18,9 +12,6 @@ import Image from "../components/Image";
 import WebcamCapture from "../components/WebcamCapture";
 import MainContainer from "../components/MainContainer";
 import AsideContent from "../components/AsideContent";
-import ComponentOptions from "../components/ComponentOptions";
-import AppActionButtons from "../components/AppActionButtons";
-import JsonPreviewer from "../components/JsonPreviewer";
 import UserConsent from "../components/UserConsent";
 import DisplayUserConsent from "../components/DisplayUserConsent";
 
@@ -57,11 +48,6 @@ export default function TemplatePreview() {
     facingMode: "user"
   };
 
-  // const [start, setStart] = useState(false);
-  // const [chats, updateChats] = useState([
-  //   { text: botIntro === '' ? 'Hello' : botIntro, speaker: 'bot' },
-  // ]);
-  // const [showBot, toggleBot] = useState(true);
 
   const [showBugModal, setShowBugModal] = useState(false);
 
@@ -173,14 +159,6 @@ export default function TemplatePreview() {
     });
     setComponents(_components);
   }, [componentOrder, selectedChatOption]);
-
-  // useEffect(() => {
-  //   setSameComponents(
-  //       selectedChatOption && components[0] && (components[1] || components[2])
-  //           ? true
-  //           : false
-  //   );
-  // }, [selectedChatOption, components]);
 
   const SortedSections = () => (
       <SortableContext
@@ -316,15 +294,6 @@ export default function TemplatePreview() {
                         )}
                       </Col>
                   )
-                  //     : appStatus !== "launch" ? (
-                  //     <DndContext
-                  //         sensors={sensors}
-                  //         onDragEnd={handleDragEnd}
-                  //         className="w-100"
-                  //     >
-                  //       {SortedSections()}
-                  //     </DndContext>
-                  // )
                       : appStatus === "launch" && !agreeToLaunch ? (
                       <DisplayUserConsent />
                   ) : (

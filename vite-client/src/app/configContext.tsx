@@ -9,6 +9,7 @@ import {
 } from "firebase/storage";
 import { db, storage } from "../config/firebase";
 import { v4 } from "uuid";
+import {conversations} from "../chats";
 
 // Creating a context for the entire app to use the states and functions from this file
 // This is a global state management
@@ -21,6 +22,11 @@ const ConfigProvider = (props : any) => {
 // }
 // function ConfigContext({ children }) {
   // UI States
+
+  const [data, setData] = useState<any>(null);
+  const [chats, updateChats] = useState(conversations);
+  console.log({globalChats:chats});
+
   const [isDnDDisabled, setIsDnDDisabled] = useState(false);
   const [selectedComponent, setSelectedComponent] = useState(null);
   // Text Content States

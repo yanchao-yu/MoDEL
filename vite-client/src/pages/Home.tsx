@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 import Darkmode from 'drkmd-js';
-import { Uploader } from "uploader"; // Installed by "react-uploader".
-import { useState } from 'react';
-import { DataContext } from '../app/store'
 
 
 export default function Home() {

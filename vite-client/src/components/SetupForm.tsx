@@ -40,7 +40,8 @@ export default function SetupForm({ display_area = true, webcam = true}) {
     const dataCtx =React.useContext(ConfigContext)
     const botId = generateString(8);
     useEffect(() => {
-        dataCtx.setBotID(botId)
+        if (!dataCtx.botID)
+            dataCtx.setBotID(botId)
     }, [dataCtx.botID]);
 
     const [componentOrder, setComponentOrder] = useState([
