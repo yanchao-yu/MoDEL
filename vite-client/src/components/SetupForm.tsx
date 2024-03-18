@@ -30,17 +30,25 @@ import WebcamCapture from "../components/WebcamCapture";
 import JsonPreviewer from "../components/JsonPreviewer";
 import UserConsent from "../components/UserConsent";
 import DisplayUserConsent from "../components/DisplayUserConsent";
+import {generateString, postData} from "../utils";
+import {useHistory} from "react-router-dom";
 
 
 export default function SetupForm({ display_area = true, webcam = true}) {
+    const history = useHistory();
+
     const dataCtx =React.useContext(ConfigContext)
+    const botId = generateString(8);
+    useEffect(() => {
+        dataCtx.setBotID(botId)
+    }, [dataCtx.botID]);
+
     const [componentOrder, setComponentOrder] = useState([
         "data-content",
         "image-content",
         "chat-content",
     ]);
     const [components, setComponents] = useState([null, null, null]);
-    const [linkCopied, setLinkCopied] = useState(false);
 
     // Function to handle drop end event
     const handleDragEnd = (event: { active: any; over: any; }) => {
@@ -64,6 +72,49 @@ export default function SetupForm({ display_area = true, webcam = true}) {
             },
         })
     );
+
+    const gotoLaunch = () => {
+        console.log('botId: '+ dataCtx.botID);
+
+        dataCtx.setAppStatus("launch");
+        dataCtx.setSelectedComponent(null);
+
+        const dataObj = {
+            "botID": dataCtx.botID,
+            "isDnDDisabled": dataCtx.isDnDDisabled,
+            "selectedComponent": dataCtx.selectedComponent,
+            "fontColor": dataCtx.fontColor,
+            "editedText": dataCtx.editedText,
+            "fontSize": dataCtx.fontSize,
+            "textData": dataCtx.textData,
+            "images": dataCtx.images,
+            "messages": dataCtx.messages,
+            "messageData": dataCtx.messageData,
+            "jsonViewer": dataCtx.jsonViewer,
+            "selectedChatOption": dataCtx.selectedChatOption,
+            "enableVoice": dataCtx.enableVoice,
+            "chatData": dataCtx.chatData,
+            "editedChatOptions": dataCtx.editedChatOptions,
+            "chatOnly": dataCtx.chatOnly,
+            "userConsent": dataCtx.userConsent,
+            "sameComponents": dataCtx.sameComponents,
+            "appStatus": dataCtx.appStatus,
+            "agreeToLaunch": dataCtx.agreeToLaunch,
+            "feedbackLink": dataCtx.feedbackLink,
+        };
+        window.localStorage.setItem('obj', JSON.stringify(dataObj));
+        const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${dataCtx.botID}`;
+        console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
+        console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
+        console.log('obj: '+ JSON.stringify(dataObj));
+
+        postData(url, dataObj)
+            .then(async (data) => {
+                console.log(data);
+                history.push(`/launch`);
+            })
+            .catch((err) => console.log(err));
+    };
 
     useEffect(() => {
         // It is used to create components based on the component order
@@ -199,20 +250,37 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                                         dataCtx.appStatus === "preview" ||
                                         (dataCtx.appStatus !== "launch" && dataCtx.selectedChatOption)
                                             ? "90%"
-                                            : "100%",
+                                            : "90%",
                                 }}
                             >
                                 <div className="pb-2 w-fit ps-3">
                                     {dataCtx.appStatus === "preview" && (
-                                        <Button
-                                            onClick={() => {
-                                                dataCtx.setAppStatus("edit");
-                                                // setSelectedChatOption("");
-                                                dataCtx.setSelectedComponent(null);
-                                            }}
-                                        >
-                                            &larr; Go Back
-                                        </Button>
+                                        <div>
+                                            <Button
+                                                style={{float: "left"}}
+                                                onClick={() => {
+                                                    dataCtx.setAppStatus("edit");
+                                                    // setSelectedChatOption("");
+                                                    dataCtx.setSelectedComponent(null);
+                                                }}
+                                            >
+                                                &larr; Go Back
+                                            </Button>
+                                            <Button
+                                                style={{float: "right"}}
+                                                variant="primary"
+                                                onClick={() => {
+
+                                                    gotoLaunch();
+                                                }}
+                                                disabled={
+                                                    dataCtx.selectedChatOption === "chat-options" ||
+                                                    dataCtx.selectedChatOption === "user-consent"
+                                                }
+                                            >
+                                                Launch
+                                            </Button>
+                                        </div>
                                     )}
                                     {dataCtx.appStatus === "launch" &&
                                         dataCtx.agreeToLaunch &&

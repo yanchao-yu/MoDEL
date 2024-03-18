@@ -267,7 +267,7 @@ export default function TemplatePreview() {
                 <Row
                     className="gx-2 "
                     style={{
-                      height: "100%",
+                      height: "90%",
                     }}
                 >
                   <div className="pb-2 w-fit ps-3">

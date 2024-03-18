@@ -1,56 +1,7 @@
-import { useContext, useState } from "react";
+
 import { Button } from "react-bootstrap";
-import { ConfigContext } from "../app/configContext";
-import {useHistory} from "react-router-dom";
-import {generateString, postData} from "../utils";
 
 function AppActionButtons({ config }) {
-
-    const history = useHistory();
-    const gotoLaunch = () => {
-        const botId = generateString(8);
-        config.setBotID(botId)
-        console.log('botId: '+ botId);
-
-        config.setAppStatus("launch");
-        config.setSelectedComponent(null);
-
-        const dataObj = {
-            "botID": config.botID,
-            "isDnDDisabled": config.isDnDDisabled,
-            "selectedComponent": config.selectedComponent,
-            "fontColor": config.fontColor,
-            "editedText": config.editedText,
-            "fontSize": config.fontSize,
-            "textData": config.textData,
-            "images": config.images,
-            "messages": config.messages,
-            "messageData": config.messageData,
-            "jsonViewer": config.jsonViewer,
-            "selectedChatOption": config.selectedChatOption,
-            "enableVoice": config.enableVoice,
-            "chatData": config.chatData,
-            "editedChatOptions": config.editedChatOptions,
-            "chatOnly": config.chatOnly,
-            "userConsent": config.userConsent,
-            "sameComponents": config.sameComponents,
-            "appStatus": config.appStatus,
-            "agreeToLaunch": config.agreeToLaunch,
-            "feedbackLink": config.feedbackLink,
-        };
-        window.localStorage.setItem('obj', JSON.stringify(dataObj));
-        const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${config.botID}`;
-        console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
-        console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
-        console.log('obj: '+ JSON.stringify(dataObj));
-
-        postData(url, dataObj)
-            .then(async (data) => {
-                console.log(data);
-                history.push(`/preview`);
-            })
-            .catch((err) => console.log(err));
-    };
 
     return (
     <>
@@ -107,19 +58,6 @@ function AppActionButtons({ config }) {
             >
               Preview
             </Button>
-                <Button
-                  variant="primary"
-                  onClick={() => {
-
-                      gotoLaunch();
-                  }}
-                  disabled={
-                      config.selectedChatOption === "chat-options" ||
-                      config.selectedChatOption === "user-consent"
-                  }
-                >
-                  Launch
-                </Button>
           </>
         )}
     </>

@@ -22,7 +22,7 @@ export default function App() {
             <Route path="/setup">
               <Template />
             </Route>
-            <Route path="/preview">
+            <Route path="/launch">
               <TemplatePreview />
             </Route>
             <Route path="/logplayback">
