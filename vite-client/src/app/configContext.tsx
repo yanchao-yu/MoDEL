@@ -68,20 +68,6 @@ const ConfigProvider = (props : any) => {
     botIcon: "",
     serverURL: "",
   });
-  const [editedChatOptions, setEditedChatOptions] = useState({
-    bot_intro: "",
-    bot_name: "",
-    development_platofrm: "",
-    input: "",
-    userInputObj: "",
-    userinput_key: "",
-    sysoutput_key: "",
-    output: "",
-    input_keys: "",
-    output_keys: "",
-    botIcon: "",
-    serverURL: "",
-  });
 
   const [chatOnly, setChatOnly] = useState({
     title: "",
@@ -262,43 +248,43 @@ const ConfigProvider = (props : any) => {
   //   }
   // };
 
-  const updateChatData = useCallback(async () => {
-    try {
-      const document = doc(db, "chat-options", chatData?.id);
-      await updateDoc(document, {
-        development_platofrm: editedChatOptions.development_platofrm,
-        bot_name: editedChatOptions.bot_name,
-        bot_intro: editedChatOptions.bot_intro,
-        botIcon: editedChatOptions.botIcon,
-        serverURL: editedChatOptions.serverURL,
-        input: editedChatOptions.input,
-        userInputObj: editedChatOptions.userInputObj,
-        userinput_key: editedChatOptions.userinput_key,
-        sysoutput_key: editedChatOptions.sysoutput_key,
-        output: editedChatOptions.output,
-        input_keys: editedChatOptions.input_keys,
-        output_keys: editedChatOptions.output_keys,
-      });
-      setChatData({
-        ...chatData,
-        development_platofrm: editedChatOptions.development_platofrm,
-        bot_name: editedChatOptions.bot_name,
-        bot_intro: editedChatOptions.bot_intro,
-        botIcon: editedChatOptions.botIcon,
-        serverURL: editedChatOptions.serverURL,
-        input: editedChatOptions.input,
-        userInputObj: editedChatOptions.userInputObj,
-        userinput_key: editedChatOptions.userinput_key,
-        sysoutput_key: editedChatOptions.sysoutput_key,
-        output: editedChatOptions.output,
-        input_keys: editedChatOptions.input_keys,
-        output_keys: editedChatOptions.output_keys,
-      });
-    } catch (err) {
-      console.error(err);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editedChatOptions, chatData]);
+  // const updateChatData = useCallback(async () => {
+  //   try {
+  //     const document = doc(db, "chat-options", chatData?.id);
+  //     await updateDoc(document, {
+  //       development_platofrm: editedChatOptions.development_platofrm,
+  //       bot_name: editedChatOptions.bot_name,
+  //       bot_intro: editedChatOptions.bot_intro,
+  //       botIcon: editedChatOptions.botIcon,
+  //       serverURL: editedChatOptions.serverURL,
+  //       input: editedChatOptions.input,
+  //       userInputObj: editedChatOptions.userInputObj,
+  //       userinput_key: editedChatOptions.userinput_key,
+  //       sysoutput_key: editedChatOptions.sysoutput_key,
+  //       output: editedChatOptions.output,
+  //       input_keys: editedChatOptions.input_keys,
+  //       output_keys: editedChatOptions.output_keys,
+  //     });
+  //     setChatData({
+  //       ...chatData,
+  //       development_platofrm: editedChatOptions.development_platofrm,
+  //       bot_name: editedChatOptions.bot_name,
+  //       bot_intro: editedChatOptions.bot_intro,
+  //       botIcon: editedChatOptions.botIcon,
+  //       serverURL: editedChatOptions.serverURL,
+  //       input: editedChatOptions.input,
+  //       userInputObj: editedChatOptions.userInputObj,
+  //       userinput_key: editedChatOptions.userinput_key,
+  //       sysoutput_key: editedChatOptions.sysoutput_key,
+  //       output: editedChatOptions.output,
+  //       input_keys: editedChatOptions.input_keys,
+  //       output_keys: editedChatOptions.output_keys,
+  //     });
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [editedChatOptions, chatData]);
 
   const getChatOnlyData = useCallback(async () => {
     try {
@@ -410,9 +396,10 @@ const ConfigProvider = (props : any) => {
         setEnableVoice,
         getChatOptions,
         chatData,
-        updateChatData,
-        editedChatOptions,
-        setEditedChatOptions,
+        setChatData,
+        // updateChatData,
+        // editedChatOptions,
+        // setEditedChatOptions,
         getChatOnlyData,
         updateChatOnlyData,
         chatOnly,

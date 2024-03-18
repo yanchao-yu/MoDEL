@@ -1,23 +1,64 @@
 import { useContext, useState } from "react";
 import { Button } from "react-bootstrap";
 import { ConfigContext } from "../app/configContext";
-import {Link} from "react-bootstrap-icons";
+import {useHistory} from "react-router-dom";
+import {generateString, postData} from "../utils";
 
-function AppActionButtons({ setAppStatus }) {
-    const {
-    selectedChatOption,
-    setSelectedChatOption,
-    isEditText,
-    setSelectedComponent,
-    } = useContext(ConfigContext);
+function AppActionButtons({ config }) {
+
+    const history = useHistory();
+    const gotoLaunch = () => {
+        const botId = generateString(8);
+        config.setBotID(botId)
+        console.log('botId: '+ botId);
+
+        config.setAppStatus("launch");
+        config.setSelectedComponent(null);
+
+        const dataObj = {
+            "botID": config.botID,
+            "isDnDDisabled": config.isDnDDisabled,
+            "selectedComponent": config.selectedComponent,
+            "fontColor": config.fontColor,
+            "editedText": config.editedText,
+            "fontSize": config.fontSize,
+            "textData": config.textData,
+            "images": config.images,
+            "messages": config.messages,
+            "messageData": config.messageData,
+            "jsonViewer": config.jsonViewer,
+            "selectedChatOption": config.selectedChatOption,
+            "enableVoice": config.enableVoice,
+            "chatData": config.chatData,
+            "editedChatOptions": config.editedChatOptions,
+            "chatOnly": config.chatOnly,
+            "userConsent": config.userConsent,
+            "sameComponents": config.sameComponents,
+            "appStatus": config.appStatus,
+            "agreeToLaunch": config.agreeToLaunch,
+            "feedbackLink": config.feedbackLink,
+        };
+        window.localStorage.setItem('obj', JSON.stringify(dataObj));
+        const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${config.botID}`;
+        console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
+        console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
+        console.log('obj: '+ JSON.stringify(dataObj));
+
+        postData(url, dataObj)
+            .then(async (data) => {
+                console.log(data);
+                history.push(`/preview`);
+            })
+            .catch((err) => console.log(err));
+    };
 
     return (
     <>
       <Button
         variant={"outline-primary"}
         onClick={() => {
-          setSelectedChatOption("");
-          setSelectedComponent(null);
+            config.setSelectedChatOption("");
+            config.setSelectedComponent(null);
         }}
       >
         Gernal Setup
@@ -25,8 +66,8 @@ function AppActionButtons({ setAppStatus }) {
       <Button
         variant={"outline-primary"}
         onClick={() => {
-          setSelectedChatOption("chat-with-content");
-          setSelectedComponent(null);
+            config.setSelectedChatOption("chat-with-content");
+            config.setSelectedComponent(null);
         }}
       >
         Chat Content
@@ -34,8 +75,8 @@ function AppActionButtons({ setAppStatus }) {
       <Button
         variant={"outline-primary"}
         onClick={() => {
-          setSelectedChatOption("chat-with-image");
-          setSelectedComponent(null);
+            config.setSelectedChatOption("chat-with-image");
+            config.setSelectedComponent(null);
         }}
       >
         Chat Image
@@ -43,25 +84,25 @@ function AppActionButtons({ setAppStatus }) {
       <Button
         variant={"outline-primary"}
         onClick={() => {
-          setSelectedChatOption("chat-only");
-          setSelectedComponent(null);
+            config.setSelectedChatOption("chat-only");
+            config.setSelectedComponent(null);
         }}
       >
         Chat Only
       </Button>
-      {selectedChatOption !== "chat-options" &&
-        selectedChatOption !== "user-consent" &&
-        !isEditText && (
+      {config.selectedChatOption !== "chat-options" &&
+          config.selectedChatOption !== "user-consent" &&
+        !config.isEditText && (
           <>
             <Button
               variant="primary"
               onClick={() => {
-                setAppStatus("preview");
-                setSelectedComponent(null);
+                  config.setAppStatus("preview");
+                  config.setSelectedComponent(null);
               }}
               disabled={
-                selectedChatOption === "chat-options" ||
-                selectedChatOption === "user-consent"
+                  config.selectedChatOption === "chat-options" ||
+                  config.selectedChatOption === "user-consent"
               }
             >
               Preview
@@ -69,13 +110,12 @@ function AppActionButtons({ setAppStatus }) {
                 <Button
                   variant="primary"
                   onClick={() => {
-                    setAppStatus("launch");
-                    setSelectedComponent(null);
+
+                      gotoLaunch();
                   }}
-                  // href="/preview"
                   disabled={
-                    selectedChatOption === "chat-options" ||
-                    selectedChatOption === "user-consent"
+                      config.selectedChatOption === "chat-options" ||
+                      config.selectedChatOption === "user-consent"
                   }
                 >
                   Launch

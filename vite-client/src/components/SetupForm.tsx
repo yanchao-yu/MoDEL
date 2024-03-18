@@ -1,10 +1,6 @@
 import * as React from 'react';
 import {useState, useRef, useEffect, useContext} from 'react';
-import { useParams, useHistory } from 'react-router-dom';
-import { postData, generateString } from '../utils';
 import 'react-dropdown/style.css';
-import Darkmode from 'drkmd-js'
-import xtype from 'xtypejs'
 
 import {
     Card,
@@ -33,18 +29,11 @@ import { SortableContext, arrayMove } from "@dnd-kit/sortable";
 import WebcamCapture from "../components/WebcamCapture";
 import JsonPreviewer from "../components/JsonPreviewer";
 import UserConsent from "../components/UserConsent";
-import DataContentOptions from "../components/DataContentOptions";
-import useClipboard from 'react-use-clipboard';
 import DisplayUserConsent from "../components/DisplayUserConsent";
 
 
-import {sampleInputData, sampleOutputData} from '../hooks/sampleData'
-import {DataContext} from "../app/store";
-
 export default function SetupForm({ display_area = true, webcam = true}) {
-    const botId = generateString(8);
     const dataCtx =React.useContext(ConfigContext)
-    console.log(dataCtx)
     const [componentOrder, setComponentOrder] = useState([
         "data-content",
         "image-content",
@@ -98,16 +87,16 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                     return <WebcamCapture />;
                 case "chat-content":
                     return   <ChatWindow
-                        title= {dataCtx.botName}
-                        botIcon={dataCtx.botIcon}
-                        serverURL={dataCtx.serverURL}
-                        session_id={dataCtx.session_id}
-                        userInputObj={dataCtx.userInputObj}
-                        userinputKey={dataCtx.userinputKey}
-                        sysoutputKey={dataCtx.sysoutputKey}
+                        title= {dataCtx.chatData.botName}
+                        botIcon={dataCtx.chatData.botIcon}
+                        serverURL={dataCtx.chatData.serverURL}
+                        session_id={dataCtx.chatData.session_id}
+                        userInputObj={dataCtx.chatData.userInputObj}
+                        userinputKey={dataCtx.chatData.userinputKey}
+                        sysoutputKey={dataCtx.chatData.sysoutputKey}
                         chats={[]}
-                        enableVoice={dataCtx.enableVoice}
-                        updateChats={dataCtx.updateChats}
+                        enableVoice={dataCtx.chatData.enableVoice}
+                        updateChats={dataCtx.chatData.messages}
                         // getDialogueLog={dataCtx.getDialogueLog}
                     />;
                 default:
@@ -192,48 +181,6 @@ export default function SetupForm({ display_area = true, webcam = true}) {
         </SortableContext>
     );
 
-    const [isCopied, setCopied] = useClipboard(
-        `${import.meta.env.VITE_BASE_URL}/demo/${botId}`
-    );
-
-    // const dataObj = {
-    //     "botId": botId,
-    //     "title": title,
-    //     "description":
-    //         descriptionEditorRef.current?.getContent() || '<p>No content provided</p>',
-    //     "embedCode": embedCode,
-    //     "developmentPlatform": developmentPlatform,
-    //     "botName": botName,
-    //     "botIntro": botIntro,
-    //     "botIcon": botIcon,
-    //     "serverURL": serverURL,
-    //     "userInputObj": userInputObj,
-    //     "userinputKey": userinput_key,
-    //     "sysoutputKey": sysoutput_key,
-    //     "consentNote":
-    //         concentEditorRef.current?.getContent() || '<p>No content provided</p>',
-    //     "enableBugReport": enableBugReport,
-    //     "enableFeedback": enableFeedback,
-    //     "enableVoice": enableVoice,
-    //     "webcamId": webcamId,
-    //     "feedbackLink": feedbackLink || 'https://forms.gle/PE9Sef4tLrQPW6bE6',
-    //     "displayContent":
-    //         editorRef.current?.getContent() || '<p>No content provided</p>',
-    // };
-    // setLoading(true);
-    // window.localStorage.setItem('obj', JSON.stringify(dataObj));
-    // const url = `${import.meta.env.VITE_SERVER_URL}/v1/demo/?id=${botId}`;
-    // console.log('url1: '+ `${import.meta.env.VITE_SERVER_URL}`);
-    //   console.log('url2: '+ `${import.meta.env.VITE_BASE_URL}`);
-    // console.log('dataObj: '+ dataObj);
-    // postData(url, dataObj)
-    //   .then(async (data) => {
-    //     console.log(data);
-    //     history.push(`/templates/${template.template}/preview`);
-    //   })
-    //   .catch((err) => console.log(err));
-    // };
-
     return (
         <div>
             <Stack
@@ -281,18 +228,10 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                                                         aria-describedby="basic-addon2"
                                                         disabled
                                                     />
-                                                    <Button
-                                                        className="input-group-text"
-                                                        id="basic-addon2"
-                                                        onClick={setCopied}
-                                                    >
-                                                        {linkCopied ? "Link Copied" : "Copy Link"}
-                                                    </Button>
                                                 </div>
                                             </div>
                                         )}
                                 </div>
-                                {/* {!selectedChatOption && <DisplayUserConsent />} */}
                                 {dataCtx.appStatus === "edit" && (
                                     <Col xs={2}>
                                         <Stack
@@ -301,7 +240,7 @@ export default function SetupForm({ display_area = true, webcam = true}) {
                                             className="h-100 border rounded bg-white p-2"
                                         >
                                             <ComponentOptions />
-                                            <AppActionButtons setAppStatus={dataCtx.setAppStatus} />
+                                            <AppActionButtons config={dataCtx} />
                                         </Stack>
                                     </Col>
                                 )}

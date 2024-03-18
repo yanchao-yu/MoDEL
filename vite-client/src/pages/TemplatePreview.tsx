@@ -5,50 +5,51 @@ import { Link, useParams } from 'react-router-dom';
 import ChatWindow from '../components/ChatWindow';
 import CModal from '../components/CModal';
 import BugReport from '../components/BugReport';
-import { generateID } from '../utils';
+import {generateID, generateString} from '../utils';
 import Webcam from "react-webcam";
-import {Tabs, Tab, Button, Form} from "react-bootstrap";
+import {Tabs, Tab, Button, Form, Col, Stack, Card, CardBody, Container, Row} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { JsonViewer } from '@textea/json-viewer';
+import {ConfigContext} from "../app/configContext";
+import {arrayMove, SortableContext} from "@dnd-kit/sortable";
+import {DndContext, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
+import DataContent from "../components/DataContent";
+import Image from "../components/Image";
+import WebcamCapture from "../components/WebcamCapture";
+import MainContainer from "../components/MainContainer";
+import AsideContent from "../components/AsideContent";
+import ComponentOptions from "../components/ComponentOptions";
+import AppActionButtons from "../components/AppActionButtons";
+import JsonPreviewer from "../components/JsonPreviewer";
+import UserConsent from "../components/UserConsent";
+import DisplayUserConsent from "../components/DisplayUserConsent";
 
 export default function TemplatePreview() {
-  const template = useParams();
-  const {
-    botId,
-    title,
-    description,
-    embedCode,
-    developmentPlatform,
-    botName,
-    botIntro,
-    botIcon,
-    serverURL,
-    consentNote,
-    userInputObj,
-    userinputKey,
-    sysoutputKey,
-    enableBugReport,
-    enableFeedback,
+  const{
+    botID,
+    isDnDDisabled,
+    selectedComponent,
+    fontColor,
+    editedText,
+    fontSize,
+    textData,
+    images,
+    messages,
+    messageData,
+    jsonViewer,
+    selectedChatOption,
     enableVoice,
-    webcamId,
-    feedbackLink,
-    displayContent,
+    chatData,
+    editedChatOptions,
+    chatOnly,
+    userConsent,
+    sameComponents,
+    appStatus,
+    agreeToLaunch,
+    feedbackLink
   } = JSON.parse(window.localStorage.getItem('obj'));
-  function descriptionMarkup() {
-    return { __html: description };
-  }
 
-  function consentMarkup() {
-    return { __html: consentNote };
-  }
-
-  function displayAreaMarkup() {
-    return { __html: displayContent };
-  }
-
-  function botIframe() {
-    return { __html: embedCode };
-  }
+  console.log(botID)
 
   const videoConstraints = {
     width: 640,
@@ -56,23 +57,15 @@ export default function TemplatePreview() {
     facingMode: "user"
   };
 
-  const [start, setStart] = useState(false);
-  const [chats, updateChats] = useState([
-    { text: botIntro === '' ? 'Hello' : botIntro, speaker: 'bot' },
-  ]);
-  const [showBot, toggleBot] = useState(true);
-
-  const [isCopied, setCopied] = useClipboard(
-    `${import.meta.env.VITE_BASE_URL}/demo/${template.template}/${botId}`
-  );
+  // const [start, setStart] = useState(false);
+  // const [chats, updateChats] = useState([
+  //   { text: botIntro === '' ? 'Hello' : botIntro, speaker: 'bot' },
+  // ]);
+  // const [showBot, toggleBot] = useState(true);
 
   const [showBugModal, setShowBugModal] = useState(false);
 
   const [dialogue_log, setDialogueLog] = useState({});
-
-  const getDialogueLog = (log) => {
-    setDialogueLog(log);
-  }
 
   const handleBugReport = async () => {
     setShowBugModal(true);
@@ -96,229 +89,252 @@ export default function TemplatePreview() {
     );
   };
 
-  const exportData = () => {
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        JSON.stringify(dialogue_log)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    link.download = botName+"_log_"+ Date.now()+".json";
+  // const exportData = () => {
+  //   const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
+  //       JSON.stringify(dialogue_log)
+  //   )}`;
+  //   const link = document.createElement("a");
+  //   link.href = jsonString;
+  //   link.download = botName+"_log_"+ Date.now()+".json";
+  //
+  //   link.click();
+  // };
 
-    link.click();
+
+  // const dataCtx =React.useContext(ConfigContext)
+  // console.log(dataCtx)
+  const [componentOrder, setComponentOrder] = useState([
+    "data-content",
+    "image-content",
+    "chat-content",
+  ]);
+  const [components, setComponents] = useState([null, null, null]);
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  // Function to handle drop end event
+  const handleDragEnd = (event: { active: any; over: any; }) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      setComponentOrder((items) => {
+        const oldIndex = items.indexOf(active.id);
+        const newIndex = items.indexOf(over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
-  return (
-    <div>
+  // It is used to create a sensor to detect the pointer events
+  const sensors = useSensors(
+      useSensor(PointerSensor, {
+        activationConstraint: {
+          // The distance in pixels the pointer must travel to activate a drag
+          distance: 10,
+        },
+      })
+  );
 
-      <div className="container">
-        <Link className="nav-link" to={`/template.templates/${template.template}/setup`}>
-          &#8592; Back to setup
-        </Link>
-        <h1 className="title">3. Ready!</h1>
-        <h3 className="sub-title">Test and share your experiment</h3>
-        <div className="preview-container">
-          <div style={{ textAlign: 'center' }}>
-            <h2>{title}</h2>
-            <p style={{ marginTop: 5 }}>
-              <div
-                  dangerouslySetInnerHTML={descriptionMarkup()}
-              />
-            </p>
-            <p style={{ marginTop: 10 }}>
-              <strong style={{ color: 'red' }}>
-                CONSENT: Please read the consent below before you continue
-              </strong>
-            </p>
-            <div className="input-div">
-              <input
-                id="consent"
-                type="checkbox"
-                onChange={(e) => setStart(e.target.checked)}
-              />{' '}
-              <div
-                  dangerouslySetInnerHTML={consentMarkup()}
-              />
+  useEffect(() => {
+    // It is used to create components based on the component order
+    const _components = componentOrder.map((id) => {
+      switch (id) {
+        case "data-content":
+          return selectedChatOption !== "chat-only" &&
+          selectedChatOption !== "chat-with-image" ? (
+              <DataContent />
+          ) : (
+              ""
+          );
+        case "image-content":
+          return selectedChatOption !== "chat-only" &&
+          selectedChatOption !== "chat-with-content" ? (
+              <Image />
+          ) : (
+              ""
+          );
+        case "webcam-content":
+          return <WebcamCapture />;
+        case "chat-content":
+          return   <ChatWindow
+              title= {chatData['bot_name']}
+              botIcon={chatData['botIcon']}
+              serverURL={chatData['serverURL']}
+              session_id={chatData['id']}
+              userInputObj={chatData['userInputObj']}
+              userinputKey={chatData['userinput_key']}
+              sysoutputKey={chatData['sysoutput_key']}
+              chats={[]}
+              enableVoice={enableVoice}
+              updateChats={messages}
+          />;
+        default:
+          return null;
+      }
+    });
+    setComponents(_components);
+  }, [componentOrder, selectedChatOption]);
 
-              {/*<label htmlFor="consent">*/}
-              {/*  <small style={{ fontSize: 14 }}>dangerouslySetInnerHTML={consentMarkup()}</small></label>*/}
-            </div>
-          </div>
-          <div className="divider"></div>
-          {start ? (
-            <div
-              className="preview"
-              style={{
-                position: 'relative',
-                // flexDirection:
-                //   template.template === 'chat-content-webcam' ? 'row-reverse' : 'row',
-              }}
-            >
-              {template.template === 'chat-content-background' &&
-              developmentPlatform !== '' ? (
-                <button
-                  className="button slategrey"
-                  style={{ position: 'absolute', bottom: -40, right: 20 }}
-                  onClick={() => toggleBot(!showBot)}
-                >
-                  {showBot ? 'X' : '+'}
-                </button>
-              ) : null}
-              {template.template !== 'chat-only' ? (
-                <div>
-                <div
-                  className={`display-area ${
-                      template.template !== 'chat-only' ? 'full-width' : ''
-                  }`}
-                  dangerouslySetInnerHTML={displayAreaMarkup()}
-                  />
+  // useEffect(() => {
+  //   setSameComponents(
+  //       selectedChatOption && components[0] && (components[1] || components[2])
+  //           ? true
+  //           : false
+  //   );
+  // }, [selectedChatOption, components]);
 
-                  {template.template == 'chat-content-webcam' ? (
-                    <div>
-                      <Webcam
-                        audio={false}
-                        height="100%"
-                        ref={webcamRef}
-                        screenshotFormat="image/jpeg"
-                        width="100%"
-                        videoConstraints={{deviceId: {webcamId}}}
-                      />
-                    </div>
-                  ): null}
-                </div>
-              ) : null}
-
-
-              {developmentPlatform === 'custom-server' ? (
-                <div
-                  className={
-                    template.template === 'chat-content-background'
-                      ? 'bot-area floating'
-                      : 'bot-area'
-                  }
-                >
-                {showBot ? (
-                    <div>
-                      {template.template === 'chat-only' ?
-                      <Tabs justify className="mb-3">
-
-                        <Tab eventKey="chat" title="Chat Window">
-                          <ChatWindow
-                              title={botName}
-                              botIcon={botIcon}
-                              serverURL={serverURL}
-                              session_id={session_id}
-                              userInputObj={userInputObj}
-                              userinputKey={userinputKey}
-                              sysoutputKey={sysoutputKey}
-                              chats={[]}
-                              enableVoice={enableVoice}
-                              updateChats={updateChats}
-                              getDialogueLog={getDialogueLog}
-                              width={template.template === 'chat-only' ? 730 : 350}
-                          />
-                        </Tab>
-                        {enableBugReport ? (
-                        <Tab eventKey="log" title="JSON Log">
-                          <div style={{"borderStyle": "thick double #32a1ce", "width":730}}>
-
-                            <JsonViewer  style={{ height: "60vh" , width:730}}
-                                         value={dialogue_log}
-                                         theme={"dark"}
-                            />
-
-                            <div className="divider"></div>
-
-                            <div style={{"textAlign": "center"}}>
-                              <button type="button" onClick={exportData}>
-                                Export Dialogue Log
-                              </button>
-                            </div>
-                          </div>
-                        </Tab>
-                        ): null}
-                      </Tabs>
-                      :
-                      <ChatWindow
-                        title={botName}
-                        botIcon={botIcon}
-                        serverURL={serverURL}
-                        session_id={session_id}
-                        userInputObj={userInputObj}
-                        userinputKey={userinputKey}
-                        sysoutputKey={sysoutputKey}
-                        chats={[
-                          { text: botIntro === '' ? 'Hello' : botIntro, speaker: 'bot' },
-                        ]}
-                        enableVoice={enableVoice}
-                        updateChats={updateChats}
-                        width={template.template === 'chat-only' ? 730 : 350}
-                      />}
-                    </div>
-                ) : null}
-                </div>
-              ) : (
-                <div
-                  className={`bot-area ${
-                    template.template === 'chat-only'
-                      ? 'full-iframe'
-                      : template.template === 'chat-content-background'
-                      ? 'bot-area floating'
-                      : ''
-                  }`}
-                  dangerouslySetInnerHTML={showBot ? botIframe() : null}
-                />
+  const SortedSections = () => (
+      <SortableContext
+          items={componentOrder}
+          className={` gap-2 ${
+              selectedChatOption && !sameComponents ? "d-flex" : ""
+          }`}
+      >
+        {selectedChatOption ? (
+            <div className="pe-1 w-100">
+              {components[0] && (
+                  <Col
+                      xs={
+                        selectedChatOption && !sameComponents
+                            ? 12
+                            : sameComponents
+                                ? 6
+                                : appStatus !== "edit"
+                                    ? 7
+                                    : 6
+                      }
+                      className="h-100 w-100"
+                  >
+                    <MainContainer component={components[0]} />
+                  </Col>
               )}
             </div>
-          ) : (
-            <p className="text-center">"Read and agree the consent first"</p>
-          )}
-          {start ? (
-              <div style={{ textAlign: 'center', marginTop: 20 }}>
-                {enableBugReport ? (
-                    <Button variant="primary"
-                        onClick={handleBugReport}
-                    >
-                      🐛 Bug Report
-                    </Button>
-                ) : null}
+        ) : (
+            components[0] && (
+                <Col
+                    xs={
+                      selectedChatOption && !sameComponents
+                          ? 12
+                          : sameComponents
+                              ? 6
+                              : appStatus !== "edit"
+                                  ? 7
+                                  : 6
+                    }
+                    className="h-100"
+                >
+                  <MainContainer component={components[0]} />
+                </Col>
+            )
+        )}
 
-                {enableFeedback ? (
-                    <Button
-                        href={feedbackLink} // link for the feedback form!!
-                        target="_blank"
-                        className="btn btn-success"
-                        style={{ marginLeft: 10 }}
-                    >
-                      Share Overall Feedback 🙂
-                    </Button>
-                ) : null}
-              </div>
-          ) : null}
-        </div>
-        {start ? (
-          <div style={{ textAlign: 'center', marginTop: 20 }}>
-            <input
-              className="share-input"
-              placeholder={`${import.meta.env.VITE_BASE_URL}/demo/${template.template}/${botId}`}
-              disabled
-            />{' '}
-            <button className="share-button" onClick={setCopied}>
-              {isCopied ? 'Link Copied!' : 'Copy Link'}
-            </button>
-          </div>
-        ) : null}
+        {(components[1] || components[2]) && (
+            <Col
+                xs={
+                  selectedChatOption && !sameComponents
+                      ? 12
+                      : sameComponents
+                          ? 6
+                          : appStatus !== "edit"
+                              ? 5
+                              : 4
+                }
+                className="h-100"
+            >
+              <AsideContent
+                  topComponent={components[1]}
+                  bottomComponent={components[2]}
+              />
+            </Col>
+        )}
+      </SortableContext>
+  );
+
+  const [isCopied, setCopied] = useClipboard(
+      `${import.meta.env.VITE_BASE_URL}/demo/${botID}`
+  );
+
+  return (
+      <div>
+        <Stack
+            direction="vertical"
+            gap={2}
+            className="align-items-end p-3"
+            style={{ height: "100dvh", maxHeight: "100vh" }}
+        >
+          <Card className="py-2 bg-light w-100 " style={{ height: "100%" }}>
+            <CardBody>
+              <Container fluid style={{ height: "100%" }}>
+                <Row
+                    className="gx-2 "
+                    style={{
+                      height: "100%",
+                    }}
+                >
+                  <div className="pb-2 w-fit ps-3">
+                    {appStatus === "launch" &&
+                        agreeToLaunch &&
+                        userConsent?.enable_overall_feedback && (
+                            <div className="d-flex justify-content-between align-items-center">
+                              <Button>Share Overall Feedback</Button>
+                            </div>
+                        )}
+                    <div className="input-group mb-3 w-50">
+                      <input
+                          type="text"
+                          className="form-control"
+                          placeholder={`${import.meta.env.VITE_BASE_URL}/demo/${botID}`}
+                          aria-label="Recipient's username"
+                          aria-describedby="basic-addon2"
+                          disabled
+                      />
+                      <Button
+                          className="input-group-text"
+                          id="basic-addon2"
+                          onClick={setCopied}
+                      >
+                        {linkCopied ? "Link Copied" : "Copy Link"}
+                      </Button>
+                    </div>
+                  </div>
+                  {selectedChatOption ? (
+                      <Col
+                          xs={10}
+                          className={`h-100 border bg-white px-3 py-2 overflow-y-auto ${
+                              selectedChatOption && sameComponents ? "d-flex" : ""
+                          }`}
+                      >
+                        {selectedChatOption === "user-consent" ? (
+                            <UserConsent />
+                        ) : appStatus !== "launch" ? (
+                            <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                              {SortedSections()}
+                            </DndContext>
+                        ) : appStatus === "launch" && !agreeToLaunch ? (
+                            <DisplayUserConsent />
+                        ) : (
+                            SortedSections()
+                        )}
+                      </Col>
+                  )
+                  //     : appStatus !== "launch" ? (
+                  //     <DndContext
+                  //         sensors={sensors}
+                  //         onDragEnd={handleDragEnd}
+                  //         className="w-100"
+                  //     >
+                  //       {SortedSections()}
+                  //     </DndContext>
+                  // )
+                      : appStatus === "launch" && !agreeToLaunch ? (
+                      <DisplayUserConsent />
+                  ) : (
+                      SortedSections()
+                  )}
+                </Row>
+              </Container>
+            </CardBody>
+          </Card>
+        </Stack>
       </div>
-      {showBugModal ? (
-          <CModal
-              close={() => setShowBugModal(false)}
-              title="🐛 Bug Report"
-              description="Please use this form to report individual bugs you find e.g. strange, unexpected responses,
-              error messages etc. Please submit a separate form for each bug you find"
-              showBugModal={showBugModal}
-          >
-            <BugReport session_id={session_id} />
-          </CModal>
-      ) : null}
-    </div>
   );
 }

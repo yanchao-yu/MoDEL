@@ -76,13 +76,6 @@ const UserConsent = () => {
           className="py-2 px-3  w-100"
           onSubmit={(e) => handleSave(e)}
         >
-          {/* {selectedChatOption && <GoBackButton />} */}
-
-          {/* <div className="form-group py-2">
-          <select className="form-control form-control-lg">
-            <option>Select Option</option>
-          </select>
-        </div> */}
           <div className="d-flex gap-2">
             <hr style={{ width: "20px" }} />
             <h1 className="fw_bolder">User Consent</h1>
@@ -106,34 +99,7 @@ const UserConsent = () => {
               }
               label="Enable Bug Report"
             />
-
-            {/* <input
-              className="form-check-input"
-              type="checkbox"
-              onChange={(e) => {
-                console.log("ebale", e.target.value)
-                setEnableBugReport(e.target.value);
-              }}
-              value={enableBugReport?"on":"off"}
-              id="enableBugReport"
-            />
-            <label className="form-check-label" htmlFor="flexCheckDefault">
-              Enable Bug Report
-            </label> */}
           </div>
-          {/* <div className="form-check py-2">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              onChange={(e) => {
-                setEnableVoice(e.target.value);
-              }}
-              value={enableVoice}
-            />
-            <label className="form-check-label" for="flexCheckDefault">
-              Enable Voice input/Output
-            </label>
-          </div> */}
           <div className="form-check py-2">
             <FormControlLabel
               control={
